@@ -52,8 +52,6 @@ CREATE TABLE tb_books (
     category_id BIGINT UNSIGNED NULL,
     title VARCHAR(200) NOT NULL,
     author VARCHAR(150) NOT NULL,
-    publisher VARCHAR(150) NULL,
-    year YEAR NULL,
     isbn VARCHAR(20) UNIQUE NULL,
     cover VARCHAR(255) NULL,
     stock INT UNSIGNED DEFAULT 1,        -- total stok

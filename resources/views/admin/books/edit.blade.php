@@ -28,17 +28,6 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div>
-                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Penerbit</label>
-                <input type="text" name="publisher" value="{{ old('publisher', $book->publisher) }}" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            </div>
-            <div>
-                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Tahun Terbit</label>
-                <input type="number" name="year" value="{{ old('year', $book->year) }}" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-            <div>
                 <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">ISBN</label>
                 <div style="display: flex; gap: 6px;">
                     <input type="text" id="isbn_input" name="isbn" value="{{ old('isbn', $book->isbn) }}" style="flex: 1; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">

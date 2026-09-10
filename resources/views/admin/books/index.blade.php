@@ -21,7 +21,6 @@
         <thead>
             <tr>
                 <th>Judul & Penulis</th>
-                <th>Penerbit & Tahun</th>
                 <th>ISBN</th>
                 <th>Stok / Tersedia</th>
                 <th>Aksi</th>
@@ -34,7 +33,6 @@
                         <strong style="color: #222;">{{ $book->title }}</strong>
                         <span style="display: block; font-size: 0.75rem; color: #68777d;">Penulis: {{ $book->author }}</span>
                     </td>
-                    <td>{{ $book->publisher ?? '-' }} ({{ $book->year ?? '-' }})</td>
                     <td><code>{{ $book->isbn ?? '-' }}</code></td>
                     <td>{{ $book->available }} / {{ $book->stock }} unit</td>
                     <td>
@@ -48,7 +46,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #68777d; padding: 24px;">Belum ada data buku.</td>
+                    <td colspan="4" style="text-align: center; color: #68777d; padding: 24px;">Belum ada data buku.</td>
                 </tr>
             @endforelse
         </tbody>

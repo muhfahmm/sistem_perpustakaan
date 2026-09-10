@@ -20,8 +20,6 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('tb_categories')->nullOnDelete();
             $table->string('title', 200);
             $table->string('author', 150);
-            $table->string('publisher', 150)->nullable();
-            $table->unsignedSmallInteger('year')->nullable();
             $table->string('isbn', 20)->nullable()->unique();
             $table->string('cover')->nullable();
             $table->unsignedInteger('stock')->default(1);
