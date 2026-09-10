@@ -38,7 +38,7 @@
             </div>
         @empty
             <p style="color: #68777d;">Belum ada buku untuk dibuatkan QR Code.</p>
-        @forelse
+        @endforelse
     </div>
 
     <div style="margin-top: 20px;">
