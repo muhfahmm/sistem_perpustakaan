@@ -3,8 +3,13 @@
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LoanController as AdminLoanController;
 use App\Http\Controllers\Admin\ReturnController;
+use App\Http\Controllers\Admin\QrCodeController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\User\LoanController as UserLoanController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,9 +26,32 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
     Route::middleware(['auth:admin', 'admin.only', 'admin.active', 'security.headers'])->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+        // 1. Buku
+        Route::resource('books', BookController::class);
+
+        // 2. User / Anggota
+        Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);
+
+        // 3. Peminjaman
+        Route::get('/loans', [AdminLoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [AdminLoanController::class, 'reject'])->name('loans.reject');
+
+        // 4. Pengembalian
+        Route::get('/returns', [ReturnController::class, 'index'])->name('returns.index');
         Route::post('/returns/scan', [ReturnController::class, 'scan'])->name('returns.scan');
+
+        // 5. QR Code
+        Route::get('/qrcode', [QrCodeController::class, 'index'])->name('qrcode.index');
+        Route::get('/qrcode/scanner', [QrCodeController::class, 'scanner'])->name('qrcode.scanner');
+
+        // 6. Notifikasi WA
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/settings', [NotificationController::class, 'settings'])->name('notifications.settings');
+
+        // 7. Laporan
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
 });
 

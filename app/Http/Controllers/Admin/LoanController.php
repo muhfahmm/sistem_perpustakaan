@@ -8,9 +8,19 @@ use App\Http\Requests\Admin\ApproveLoanRequest;
 use App\Models\Loan;
 use App\Services\LoanService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
+    public function index(Request $request)
+    {
+        $loans = Loan::with(['user', 'book'])
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.loans.index', compact('loans'));
+    }
+
     public function approve(ApproveLoanRequest $request, Loan $loan, LoanService $loanService): RedirectResponse
     {
         try {

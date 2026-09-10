@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\LoanException;
 use App\Http\Controllers\Controller;
+use App\Models\Loan;
 use App\Services\LoanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,16 @@ use Illuminate\Support\Facades\Cache;
 
 class ReturnController extends Controller
 {
+    public function index()
+    {
+        $returnedLoans = Loan::with(['user', 'book'])
+            ->whereIn('status', ['returned', 'overdue'])
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.returns.index', compact('returnedLoans'));
+    }
+
     public function scan(Request $request, LoanService $loanService): JsonResponse
     {
         $data = $request->validate(['loan_code' => ['required', 'string', 'max:30']]);
