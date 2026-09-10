@@ -122,7 +122,6 @@
     <h1>Dashboard Admin</h1>
 </header>
 
-<!-- STATS BOXES -->
 <section class="stats" aria-label="Statistik perpustakaan">
     <article class="stat">
         <div class="stat-value">{{ number_format($stats['books']) }}</div>
@@ -147,7 +146,6 @@
 </section>
 
 <div class="content-grid">
-    <!-- RECENT LOANS -->
     <section class="panel">
         <div class="panel-heading">
             <h2>Peminjaman Terbaru</h2>
@@ -195,7 +193,6 @@
         </table>
     </section>
 
-    <!-- QUICK ACTIONS -->
     <section class="panel">
         <div class="panel-heading">
             <h2>Aksi Cepat</h2>

@@ -35,7 +35,6 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR STYLES */
         aside {
             display: flex;
             flex-direction: column;
@@ -171,7 +170,6 @@
             line-height: 1.4;
         }
 
-        /* MAIN AREA & TOPBAR */
         main {
             min-width: 0;
             display: flex;
@@ -227,7 +225,6 @@
             font-weight: 600;
         }
 
-        /* ALERTS */
         .alert {
             padding: 12px 16px;
             border-radius: 3px;
@@ -237,7 +234,6 @@
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        /* COMMON PANEL & TABLE STYLES */
         .panel {
             background: var(--panel);
             border-top: 3px solid #d2d6de;
@@ -288,15 +284,11 @@
 </head>
 <body>
     <div class="layout">
-        <!-- SIDEBAR PARTIAL -->
         @include('layouts.partials.sidebar')
 
-        <!-- MAIN AREA -->
         <main>
-            <!-- TOPBAR PARTIAL -->
             @include('layouts.partials.topbar')
 
-            <!-- MAIN CONTENT -->
             <div class="main-content">
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
