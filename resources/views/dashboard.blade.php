@@ -4,488 +4,725 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin | Perpusku</title>
+    <!-- Google Fonts: Plus Jakarta Sans & Fraunces -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #263238;
-            --muted: #68777d;
-            --paper: #ecf0f5;
-            --panel: #ffffff;
-            --line: #dfe4e8;
-            --teal: #00a65a;
-            --teal-soft: #e3f2ef;
-            --orange: #f39c12;
-            --yellow-soft: #fff2d9;
-            nav form { margin: 0; }
-
-            nav form button {
-                display: flex;
-                align-items: center;
-                gap: 11px;
-                width: 100%;
-                min-height: 43px;
-                padding: 0 20px;
-                color: #c7d1d4;
-                background: transparent;
-                border: 0;
-                cursor: pointer;
-                font: inherit;
-                text-align: left;
-            }
-
-            nav form button:hover { color: #fff; background: #1b2529; }
-            --blue-soft: #e8f0f8;
-            --red: #dd4b39;
+            --bg-body: #f8fafc;
+            --navy-dark: #0f172a;
+            --navy-sidebar: #1e293b;
+            --navy-hover: #334155;
+            --accent-gold: #d97706;
+            --accent-soft: rgba(217, 119, 6, 0.12);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --font-serif: 'Fraunces', Georgia, serif;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
-            margin: 0;
-            color: var(--ink);
-            background: var(--paper);
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            min-height: 100vh;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-sans);
         }
 
-        .layout {
+        .app-layout {
             display: grid;
-            grid-template-columns: 230px 1fr;
+            grid-template-columns: 260px 1fr;
             min-height: 100vh;
         }
 
+        /* SIDEBAR */
         aside {
+            background-color: var(--navy-dark);
+            color: #ffffff;
             display: flex;
             flex-direction: column;
-            padding: 0 0 20px;
-            color: #eef8f4;
-            background: #222d32;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 10;
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            height: 48px;
-            margin: 0;
-            padding: 0 20px;
-            color: #fff;
-            background: #008d4c;
-            font: 600 1.2rem 'Segoe UI', sans-serif;
-        }
-
-        .brand-mark {
-            display: grid;
-            width: 32px;
-            height: 32px;
-            place-items: center;
-            color: #fff;
-            background: #f6d55c;
-            border-radius: 50%;
-            font: 700 1rem 'Segoe UI', sans-serif;
-        }
-
-        .profile {
+        .sidebar-brand {
+            padding: 1.5rem;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 15px 14px;
-            background: #1e282c;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .profile-avatar {
-            display: grid;
-            width: 42px;
-            height: 42px;
-            place-items: center;
-            color: #222d32;
-            background: #f5d76e;
-            border: 3px solid #dcecf0;
-            border-radius: 50%;
-            font-size: 1.15rem;
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-gold), #b45309);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
         }
 
-        .profile-name {
-            color: #fff;
-            font-size: .78rem;
+        .brand-text {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .admin-profile-card {
+            margin: 1.25rem 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: #ffffff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .admin-info {
+            overflow: hidden;
+        }
+
+        .admin-username {
+            font-size: 0.9rem;
             font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .profile-role {
+        .admin-badge {
             display: inline-block;
-            margin-top: 5px;
-            padding: 3px 6px;
-            color: #fff;
-            background: #f39c12;
-            font-size: .62rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-section {
+            padding: 0 1rem;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .nav-label {
-            padding: 12px 15px 8px;
-            color: #6d858c;
-            background: #1b2529;
-            font-size: .62rem;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-        nav { display: grid; gap: 0; padding-top: 42px; }
-
-        nav a {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-height: 43px;
-            padding: 0 20px;
-            color: #c7d1d4;
-            border-radius: 0;
-            font-size: .8rem;
-            text-decoration: none;
-        }
-
-        nav a.active, nav a:hover {
-            color: #fff;
-            background: #1b2529;
-        }
-
-        nav .icon {
-            width: 18px;
-            color: #c7d1d4;
-            text-align: center;
+            font-size: 0.7rem;
             font-weight: 700;
-        }
-
-        nav a::after {
-            margin-left: auto;
-            color: #c7d1d4;
-            font-size: .95rem;
-        }
-
-        nav a:nth-child(2)::after,
-        nav a:nth-child(4)::after,
-        nav a:nth-child(6)::after,
-        nav a:nth-child(7)::after,
-        nav a:nth-child(8)::after { content: '‹'; transform: rotate(180deg); }
-
-        .sidebar-footer {
-            margin-top: auto;
-            margin: 24px 0 0;
-            padding: 18px 20px 0;
-            border-top: 1px solid rgba(255, 255, 255, .14);
-            color: #aebfc1;
-            font-size: .75rem;
-            line-height: 1.5;
-        }
-
-        main {
-            min-width: 0;
-            padding: 0 clamp(30px, 4vw, 58px) 50px;
-        }
-
-        main::before {
-            content: 'Sistem Informasi Perpustakaan Berbasis Web v1.0';
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            height: 48px;
-            margin: 0 calc(clamp(30px, 4vw, 58px) * -1) 32px;
-            padding: 0 clamp(18px, 3vw, 32px);
-            color: #fff;
-            background: #00a65a;
-            font-size: .76rem;
-            font-weight: 600;
-        }
-
-        header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 26px;
-        }
-
-        .eyebrow {
-            margin: 0 0 8px;
-            display: none;
-        }
-
-        h1 {
-            margin: 0;
-            color: #333;
-            font: 400 clamp(1.55rem, 2.5vw, 2rem)/1.2 'Segoe UI', sans-serif;
-        }
-
-        .admin {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #536167;
-            font-size: .82rem;
-        }
-
-        .avatar {
-            display: grid;
-            width: 38px;
-            height: 38px;
-            place-items: center;
-            color: #fff;
-            background: #3c8dbc;
-            border-radius: 50%;
-            font-weight: 700;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
-            margin-bottom: 28px;
-        }
-
-        .stat, .panel {
-            background: var(--panel);
-            border: 0;
-            border-radius: 2px;
-        }
-
-        .stat {
-            position: relative;
-            min-height: 118px;
-            padding: 20px 12px 38px;
-            color: #fff;
-            overflow: hidden;
-            background: #3c8dbc;
-        }
-
-        .stat:nth-child(2) { background: #f39c12; }
-        .stat:nth-child(3) { background: #00a65a; }
-        .stat:nth-child(4) { background: #dd4b39; }
-
-        .stat-label {
-            color: rgba(255, 255, 255, .95);
-            font-size: .8rem;
-        }
-
-        .stat-value {
-            margin: 0 0 10px;
-            font: 400 2rem 'Segoe UI', sans-serif;
-        }
-
-        .stat-note {
-            position: absolute;
-            right: 12px;
-            bottom: 38px;
-            color: rgba(255, 255, 255, .15);
-            font-size: 0;
-        }
-
-        .stat-note::after {
-            content: '▥';
-            font-size: 2.8rem;
-        }
-        .stat:nth-child(2) .stat-note::after { content: '♟'; }
-        .stat:nth-child(3) .stat-note::after { content: '▥'; }
-        .stat:nth-child(4) .stat-note::after { content: '▥'; }
-
-        .stat::after {
-            content: 'More info  ⓘ';
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            padding: 6px 10px;
-            color: rgba(255, 255, 255, .95);
-            background: rgba(0, 0, 0, .13);
-            font-size: .72rem;
-            text-align: center;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.5fr) minmax(260px, .85fr);
-            gap: 24px;
-        }
-
-        .panel { padding: 20px; }
-
-        .panel-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            margin: 0;
-            font: 400 1.15rem 'Segoe UI', sans-serif;
-        }
-
-        .panel-link {
-            color: #3c8dbc;
-            font-size: .75rem;
-            text-decoration: none;
-        }
-
-        table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-        th {
-            padding: 0 0 12px;
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit"><span class="icon">↪</span> Logout</button>
-                    </form>
-            font-size: .68rem;
-            font-weight: 400;
-            letter-spacing: .08em;
-            text-align: left;
             text-transform: uppercase;
-        }
-        td { padding: 14px 8px 14px 0; border-top: 1px solid var(--line); }
-        td:last-child, th:last-child { text-align: right; }
-        .book { font-weight: 700; }
-        .borrower { display: block; margin-top: 4px; color: var(--muted); font-size: .72rem; font-weight: 400; }
-
-        .status {
-            display: inline-block;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: .67rem;
-            white-space: nowrap;
-        }
-        .status.pending { color: #966313; background: var(--yellow-soft); }
-        .status.borrowed { color: #3d6484; background: var(--blue-soft); }
-        .status.returned { color: #327469; background: var(--teal-soft); }
-        .status.approved { color: #327469; background: var(--teal-soft); }
-        .status.overdue, .status.lost, .status.rejected { color: #9b3d35; background: #fbe6e3; }
-
-        .empty-state {
-            padding: 28px 0;
-            color: var(--muted);
-            text-align: center;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin: 1.25rem 0.5rem 0.5rem;
         }
 
-        .quick-actions { display: grid; gap: 10px; }
-        .action {
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item a, .nav-item button {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 13px;
-            color: var(--ink);
-            border: 1px solid var(--line);
-            border-radius: 5px;
-            font-size: .8rem;
+            padding: 0.75rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .nav-item a:hover, .nav-item button:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-item a.active {
+            color: #ffffff;
+            background: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.78rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TOP HEADER BAR */
+        .top-header {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .header-title-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-greeting {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+        }
+
+        .header-greeting span {
+            color: var(--accent-gold);
+        }
+
+        .user-top-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-body);
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-top-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--navy-dark);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .user-top-username {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--navy-dark);
+        }
+
+        /* DASHBOARD BODY */
+        .dashboard-body {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .page-heading {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-blue { background: #e0f2fe; color: #0284c7; }
+        .icon-amber { background: #fef3c7; color: #d97706; }
+        .icon-emerald { background: #d1fae5; color: #059669; }
+        .icon-rose { background: #ffe4e6; color: #e11d48; }
+
+        .stat-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+            line-height: 1;
+        }
+
+        /* CONTENT GRID */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .panel-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .panel-title {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+        }
+
+        .panel-action-link {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent-gold);
             text-decoration: none;
         }
-        .action:hover { border-color: #3c8dbc; background: #f8fbfd; }
-        .action-icon { color: var(--orange); font-size: 1.1rem; }
 
-        .notice {
-            margin-top: 20px;
-            padding: 17px;
-            color: #73562c;
-            background: var(--yellow-soft);
-            border-left: 3px solid var(--orange);
-            font-size: .78rem;
-            line-height: 1.5;
+        .panel-action-link:hover {
+            text-decoration: underline;
         }
 
-        @media (max-width: 900px) {
-            .layout { grid-template-columns: 1fr; }
-            aside { padding: 0 0 18px; }
-            .brand { margin: 0; }
-            nav { grid-template-columns: repeat(3, 1fr); }
-            .sidebar-footer { display: none; }
-            .stats { grid-template-columns: repeat(2, 1fr); }
+        /* TABLE STYLES */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
         }
 
-        @media (max-width: 600px) {
-            main { padding: 26px 16px 36px; }
-            header { display: block; }
-            .admin { margin-top: 20px; }
-            nav { grid-template-columns: repeat(2, 1fr); }
-            .stats, .content-grid { grid-template-columns: 1fr; }
-            table { font-size: .72rem; }
-            td { padding-right: 4px; }
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            background: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .book-title {
+            font-weight: 600;
+            color: var(--navy-dark);
+            display: block;
+        }
+
+        .borrower-name {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #b45309; }
+        .status-approved, .status-borrowed { background: #dbeafe; color: #1d4ed8; }
+        .status-returned { background: #d1fae5; color: #047857; }
+        .status-overdue, .status-rejected, .status-lost { background: #ffe4e6; color: #be123c; }
+
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* QUICK ACTIONS */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--navy-dark);
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #ffffff;
+            border-color: var(--accent-gold);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.12);
+            transform: translateX(2px);
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--accent-soft);
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .app-layout { grid-template-columns: 1fr; }
+            aside { display: none; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="layout">
+    @php
+        /** @var \App\Models\Admin|null $currentAdmin */
+        $currentAdmin = auth('admin')->user();
+        $adminUsername = $currentAdmin->username ?? 'Admin';
+        $adminInitial = strtoupper(substr($adminUsername, 0, 1));
+    @endphp
+
+    <div class="app-layout">
+        <!-- SIDEBAR -->
         <aside>
-            <div class="brand"><span class="brand-mark">P</span> Perpusku</div>
-            <div class="profile">
-                <span class="profile-avatar">A</span>
-                <div><div class="profile-name">Admin Perpusku</div><span class="profile-role">Administrator</span></div>
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <span class="brand-text">Perpusku</span>
             </div>
-            <nav aria-label="Navigasi admin">
-                <div class="nav-label">Main navigation</div>
-                <a class="active" href="/"><span class="icon">⌂</span> Dashboard</a>
-                <a href="#"><span class="icon">▤</span> Manajemen Buku</a>
-                <a href="#"><span class="icon">♙</span> Manajemen User</a>
-                <a href="#"><span class="icon">↔</span> Peminjaman</a>
-                <a href="#"><span class="icon">✓</span> Pengembalian</a>
-                <a href="#"><span class="icon">▦</span> QR Code</a>
-                <a href="#"><span class="icon">◌</span> Notifikasi WA</a>
-                <a href="#"><span class="icon">▥</span> Laporan</a>
-                <div class="nav-label">Setting</div>
-                <a href="#"><span class="icon">♟</span> Pengguna Sistem</a>
-                <a href="#"><span class="icon">↪</span> Logout</a>
-            </nav>
-            <div class="sidebar-footer">Panel admin<br>Perpustakaan digital</div>
+
+            <div class="admin-profile-card">
+                <div class="admin-avatar">{{ $adminInitial }}</div>
+                <div class="admin-info">
+                    <div class="admin-username">{{ $adminUsername }}</div>
+                    <span class="admin-badge">Administrator</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Navigasi Utama</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.dashboard') }}" class="active">
+                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
+                            <span>Manajemen Buku</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+                            <span>Manajemen User</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></span>
+                            <span>Peminjaman</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                            <span>Pengembalian</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-label">Pengaturan</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <form method="POST" action="{{ route('admin.logout') }}">
+                            @csrf
+                            <button type="submit">
+                                <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                Perpusku System &copy; {{ date('Y') }}
+            </div>
         </aside>
 
+        <!-- MAIN CONTENT AREA -->
         <main>
-            <header>
-                <div>
-                    <p class="eyebrow">Ringkasan hari ini</p>
-                    <h1>Dashboard admin</h1>
+            <!-- TOP HEADER BAR -->
+            <header class="top-header">
+                <div class="header-title-area">
+                    <h2 class="header-greeting">Selamat datang kembali, <span>{{ $adminUsername }}</span></h2>
                 </div>
-                <div class="admin"><span>Administrator</span><span class="avatar">A</span></div>
+
+                <div class="user-top-profile">
+                    <div class="user-top-avatar">{{ $adminInitial }}</div>
+                    <span class="user-top-username">{{ $adminUsername }}</span>
+                </div>
             </header>
 
-            <section class="stats" aria-label="Statistik perpustakaan">
-                <article class="stat"><div class="stat-label">Total koleksi buku</div><div class="stat-value">{{ number_format($stats['books']) }}</div><div class="stat-note">Data saat ini</div></article>
-                <article class="stat"><div class="stat-label">Sedang dipinjam</div><div class="stat-value">{{ number_format($stats['activeLoans']) }}</div><div class="stat-note">Data saat ini</div></article>
-                <article class="stat"><div class="stat-label">Anggota aktif</div><div class="stat-value">{{ number_format($stats['activeMembers']) }}</div><div class="stat-note">Data saat ini</div></article>
-                <article class="stat"><div class="stat-label">Terlambat dikembalikan</div><div class="stat-value">{{ number_format($stats['overdueLoans']) }}</div><div class="stat-note">Data saat ini</div></article>
-            </section>
+            <!-- DASHBOARD BODY -->
+            <div class="dashboard-body">
+                <div class="page-heading">
+                    <h1 class="page-title">Dashboard Overview</h1>
+                    <p class="page-subtitle">Ringkasan statistik dan aktivitas perpustakaan hari ini.</p>
+                </div>
 
-            <div class="content-grid">
-                <section class="panel">
-                    <div class="panel-heading"><h2>Peminjaman terbaru</h2><a class="panel-link" href="#">Lihat semua</a></div>
-                    <table>
-                        <thead><tr><th>Buku & peminjam</th><th>Tanggal</th><th>Status</th></tr></thead>
-                        <tbody>
-                            @forelse ($recentLoans as $loan)
-                                @php
-                                    $statusLabels = [
-                                        'pending' => 'Menunggu',
-                                        'approved' => 'Disetujui',
-                                        'borrowed' => 'Dipinjam',
-                                        'returned' => 'Dikembalikan',
-                                        'overdue' => 'Terlambat',
-                                        'rejected' => 'Ditolak',
-                                        'lost' => 'Hilang',
-                                    ];
-                                @endphp
-                                <tr>
-                                    <td><span class="book">{{ $loan->title }}</span><span class="borrower">{{ $loan->borrower }}</span></td>
-                                    <td>{{ date('d M Y', strtotime($loan->loan_date)) }}</td>
-                                    <td><span class="status {{ $loan->status }}">{{ $statusLabels[$loan->status] ?? ucfirst($loan->status) }}</span></td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="3" class="empty-state">Belum ada data peminjaman.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </section>
-
-                <section class="panel">
-                    <div class="panel-heading"><h2>Aksi cepat</h2></div>
-                    <div class="quick-actions">
-                        <a class="action" href="#"><span class="action-icon">+</span> Tambah buku baru</a>
-                        <a class="action" href="#"><span class="action-icon">✓</span> Tinjau pengajuan</a>
-                        <a class="action" href="#"><span class="action-icon">▦</span> Buat QR Code</a>
-                        <a class="action" href="#"><span class="action-icon">↓</span> Unduh laporan</a>
+                <!-- STATS GRID -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">Total Koleksi Buku</span>
+                            <div class="stat-icon icon-blue">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ number_format($stats['books']) }}</div>
                     </div>
-                    <div class="notice"><strong>{{ number_format($stats['overdueLoans']) }} pinjaman terlambat.</strong><br>Data ditampilkan langsung dari database perpustakaan.</div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">Sedang Dipinjam</span>
+                            <div class="stat-icon icon-amber">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ number_format($stats['activeLoans']) }}</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">Anggota Aktif</span>
+                            <div class="stat-icon icon-emerald">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ number_format($stats['activeMembers']) }}</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-label">Terlambat Kembali</span>
+                            <div class="stat-icon icon-rose">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ number_format($stats['overdueLoans']) }}</div>
+                    </div>
                 </section>
+
+                <!-- CONTENT GRID -->
+                <div class="content-grid">
+                    <!-- RECENT LOANS TABLE -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Peminjaman Terbaru</h3>
+                            <a href="#" class="panel-action-link">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Buku & Peminjam</th>
+                                    <th>Tanggal</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($recentLoans as $loan)
+                                    @php
+                                        $statusLabels = [
+                                            'pending' => 'Menunggu',
+                                            'approved' => 'Disetujui',
+                                            'borrowed' => 'Dipinjam',
+                                            'returned' => 'Dikembalikan',
+                                            'overdue' => 'Terlambat',
+                                            'rejected' => 'Ditolak',
+                                            'lost' => 'Hilang',
+                                        ];
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <span class="book-title">{{ $loan->title }}</span>
+                                            <span class="borrower-name">{{ $loan->borrower }}</span>
+                                        </td>
+                                        <td>{{ date('d M Y', strtotime($loan->loan_date)) }}</td>
+                                        <td>
+                                            <span class="badge-status status-{{ $loan->status }}">
+                                                {{ $statusLabels[$loan->status] ?? ucfirst($loan->status) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="empty-state">Belum ada data peminjaman.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- QUICK ACTIONS -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Aksi Cepat</h3>
+                        </div>
+                        <div class="action-list">
+                            <a href="#" class="action-btn">
+                                <span class="action-icon">+</span>
+                                <span>Tambah Buku Baru</span>
+                            </a>
+                            <a href="#" class="action-btn">
+                                <span class="action-icon">✓</span>
+                                <span>Tinjau Pengajuan</span>
+                            </a>
+                            <a href="#" class="action-btn">
+                                <span class="action-icon">▦</span>
+                                <span>Buat QR Code</span>
+                            </a>
+                            <a href="#" class="action-btn">
+                                <span class="action-icon">↓</span>
+                                <span>Unduh Laporan</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
