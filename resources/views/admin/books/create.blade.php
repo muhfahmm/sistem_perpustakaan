@@ -94,19 +94,36 @@ function startIsbnScanner() {
     }
 
     const config = {
-        fps: 15,
-        qrbox: { width: 280, height: 160 },
-        aspectRatio: 1.333
+        fps: 25,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const width = Math.floor(minEdge * 0.85);
+            const height = Math.floor(minEdge * 0.5);
+            return { width: width, height: height };
+        },
+        aspectRatio: 1.333,
+        formatsToSupport: [
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.QR_CODE
+        ],
+        experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+        }
     };
 
+    const cameraConfig = { facingMode: "environment" };
+
     html5QrCode.start(
-        { facingMode: "environment" },
+        cameraConfig,
         config,
         (decodedText, decodedResult) => {
             document.getElementById('isbn_input').value = decodedText;
             document.getElementById('scan-status').innerText = '✓ ISBN Ditemukan: ' + decodedText;
 
-            // Audio beep feedback
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
@@ -121,12 +138,30 @@ function startIsbnScanner() {
                 stopIsbnScanner();
             }, 600);
         },
-        (errorMessage) => {
-            // Scanner scanning loop
-        }
+        (errorMessage) => {}
     ).catch(err => {
-        document.getElementById('scan-status').innerText = 'Gagal membuka kamera: ' + err;
-        document.getElementById('scan-status').style.color = '#dd4b39';
+        html5QrCode.start(
+            { facingMode: "user" },
+            config,
+            (decodedText, decodedResult) => {
+                document.getElementById('isbn_input').value = decodedText;
+                document.getElementById('scan-status').innerText = '✓ ISBN Ditemukan: ' + decodedText;
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 880;
+                    osc.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.15);
+                } catch (e) {}
+                setTimeout(() => { stopIsbnScanner(); }, 600);
+            },
+            (errorMessage) => {}
+        ).catch(err2 => {
+            document.getElementById('scan-status').innerText = 'Gagal membuka kamera: ' + err2;
+            document.getElementById('scan-status').style.color = '#dd4b39';
+        });
     });
 }
 
