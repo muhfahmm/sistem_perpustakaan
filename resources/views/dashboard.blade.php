@@ -4,503 +4,402 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin | Perpusku</title>
-    <!-- Google Fonts: Plus Jakarta Sans & Fraunces -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --navy-dark: #0f172a;
-            --navy-sidebar: #1e293b;
-            --navy-hover: #334155;
-            --accent-gold: #d97706;
-            --accent-soft: rgba(217, 119, 6, 0.12);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --card-bg: #ffffff;
-            --font-serif: 'Fraunces', Georgia, serif;
-            --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --ink: #263238;
+            --muted: #68777d;
+            --paper: #ecf0f5;
+            --panel: #ffffff;
+            --line: #dfe4e8;
+            --teal: #00a65a;
+            --teal-soft: #e3f2ef;
+            --orange: #f39c12;
+            --yellow-soft: #fff2d9;
+            --blue-soft: #e8f0f8;
+            --red: #dd4b39;
+            --blue-main: #3c8dbc;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; }
 
         body {
-            min-height: 100vh;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: var(--font-sans);
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
         }
 
-        .app-layout {
+        .layout {
             display: grid;
-            grid-template-columns: 260px 1fr;
+            grid-template-columns: 230px 1fr;
             min-height: 100vh;
         }
 
         /* SIDEBAR */
         aside {
-            background-color: var(--navy-dark);
-            color: #ffffff;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            z-index: 10;
+            padding: 0 0 20px;
+            color: #eef8f4;
+            background: #222d32;
         }
 
-        .sidebar-brand {
-            padding: 1.5rem;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 50px;
+            margin: 0;
+            padding: 0 20px;
+            color: #fff;
+            background: #008d4c;
+            font: 600 1.15rem 'Segoe UI', sans-serif;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 30px;
+            height: 30px;
+            place-items: center;
+            color: #fff;
+            background: #f6d55c;
+            border-radius: 50%;
+            font: 700 0.95rem 'Segoe UI', sans-serif;
+        }
+
+        .profile {
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 15px;
+            background: #1e282c;
         }
 
-        .brand-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent-gold), #b45309);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
-        }
-
-        .brand-text {
-            font-family: var(--font-serif);
-            font-size: 1.4rem;
+        .profile-avatar {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            color: #222d32;
+            background: #f5d76e;
+            border: 2px solid #dcecf0;
+            border-radius: 50%;
             font-weight: 700;
-            color: #ffffff;
-            letter-spacing: -0.02em;
-        }
-
-        .admin-profile-card {
-            margin: 1.25rem 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .admin-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #38bdf8, #0284c7);
-            color: #ffffff;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-transform: uppercase;
         }
 
-        .admin-info {
-            overflow: hidden;
-        }
-
-        .admin-username {
-            font-size: 0.9rem;
+        .profile-name {
+            color: #fff;
+            font-size: 0.82rem;
             font-weight: 600;
-            color: #ffffff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .admin-badge {
+        .profile-role {
             display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .nav-section {
-            padding: 0 1rem;
-            flex: 1;
-            overflow-y: auto;
+            margin-top: 3px;
+            padding: 2px 6px;
+            color: #fff;
+            background: #f39c12;
+            border-radius: 2px;
+            font-size: 0.65rem;
         }
 
         .nav-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            padding: 12px 15px 8px;
+            color: #6d858c;
+            background: #1b2529;
+            font-size: 0.65rem;
             letter-spacing: 0.08em;
-            color: #64748b;
-            margin: 1.25rem 0.5rem 0.5rem;
+            text-transform: uppercase;
         }
 
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        nav {
+            display: grid;
+            gap: 0;
         }
 
-        .nav-item a, .nav-item button {
+        nav a {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0.75rem 1rem;
-            color: #94a3b8;
+            gap: 11px;
+            min-height: 42px;
+            padding: 0 20px;
+            color: #c7d1d4;
+            font-size: 0.82rem;
             text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+        }
+
+        nav a.active, nav a:hover {
+            color: #fff;
+            background: #1b2529;
+        }
+
+        nav .icon {
+            width: 18px;
+            color: #c7d1d4;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        nav form {
+            margin: 0;
+        }
+
+        nav form button {
+            display: flex;
+            align-items: center;
+            gap: 11px;
             width: 100%;
-            background: none;
-            border: none;
+            min-height: 42px;
+            padding: 0 20px;
+            color: #c7d1d4;
+            background: transparent;
+            border: 0;
             cursor: pointer;
+            font: inherit;
+            font-size: 0.82rem;
             text-align: left;
         }
 
-        .nav-item a:hover, .nav-item button:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .nav-item a.active {
-            color: #ffffff;
-            background: var(--accent-gold);
-            font-weight: 600;
-        }
-
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        nav form button:hover {
+            color: #fff;
+            background: #1b2529;
         }
 
         .sidebar-footer {
-            padding: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 0.78rem;
-            color: #64748b;
-            text-align: center;
+            margin-top: auto;
+            padding: 16px 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8aa4af;
+            font-size: 0.75rem;
+            line-height: 1.4;
         }
 
-        /* MAIN CONTENT AREA */
+        /* MAIN AREA */
         main {
             min-width: 0;
             display: flex;
             flex-direction: column;
         }
 
-        /* TOP HEADER BAR */
-        .top-header {
-            height: 70px;
-            background: #ffffff;
-            border-bottom: 1px solid var(--border-color);
-            padding: 0 2rem;
+        /* TOPBAR (NO V1.0 TEXT, SHOWS ACTIVE ADMIN USERNAME) */
+        .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 5;
+            height: 50px;
+            padding: 0 30px;
+            background: #00a65a;
+            color: #fff;
         }
 
-        .header-title-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-greeting {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--navy-dark);
-        }
-
-        .header-greeting span {
-            color: var(--accent-gold);
-        }
-
-        .user-top-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--bg-body);
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-        }
-
-        .user-top-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--navy-dark);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
+        .topbar-brand-sub {
             font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .topbar-avatar {
+            display: grid;
+            width: 28px;
+            height: 28px;
+            place-items: center;
+            color: #008d4c;
+            background: #ffffff;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.8rem;
             text-transform: uppercase;
         }
 
-        .user-top-username {
-            font-size: 0.85rem;
+        .main-content {
+            padding: 24px 30px 40px;
+        }
+
+        header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+            font-size: 1.6rem;
             font-weight: 600;
-            color: var(--navy-dark);
         }
 
-        /* DASHBOARD BODY */
-        .dashboard-body {
-            padding: 2rem;
-            flex: 1;
-        }
-
-        .page-heading {
-            margin-bottom: 1.75rem;
-        }
-
-        .page-title {
-            font-family: var(--font-serif);
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--navy-dark);
-            letter-spacing: -0.02em;
-        }
-
-        .page-subtitle {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* STATS GRID */
-        .stats-grid {
+        /* STATS BOXES */
+        .stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .stat {
+            position: relative;
+            min-height: 110px;
+            padding: 16px;
+            color: #fff;
+            border-radius: 3px;
+            overflow: hidden;
+            background: var(--blue-main);
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-        }
-
-        .stat-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-blue { background: #e0f2fe; color: #0284c7; }
-        .icon-amber { background: #fef3c7; color: #d97706; }
-        .icon-emerald { background: #d1fae5; color: #059669; }
-        .icon-rose { background: #ffe4e6; color: #e11d48; }
-
-        .stat-label {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+        .stat:nth-child(2) { background: #f39c12; }
+        .stat:nth-child(3) { background: #00a65a; }
+        .stat:nth-child(4) { background: #dd4b39; }
 
         .stat-value {
-            font-family: var(--font-serif);
-            font-size: 2.2rem;
+            margin: 0 0 4px;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--navy-dark);
-            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-footer {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 4px 10px;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.12);
+            font-size: 0.72rem;
+            text-align: center;
         }
 
         /* CONTENT GRID */
         .content-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
+            gap: 20px;
         }
 
-        .panel-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        .panel {
+            background: var(--panel);
+            border-top: 3px solid #d2d6de;
+            border-radius: 3px;
+            padding: 18px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
 
-        .panel-header {
+        .panel-heading {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--line);
         }
 
-        .panel-title {
-            font-family: var(--font-serif);
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--navy-dark);
-        }
-
-        .panel-action-link {
-            font-size: 0.82rem;
+        h2 {
+            margin: 0;
+            font-size: 1.05rem;
             font-weight: 600;
-            color: var(--accent-gold);
+            color: #333;
+        }
+
+        .panel-link {
+            color: var(--blue-main);
+            font-size: 0.78rem;
             text-decoration: none;
         }
 
-        .panel-action-link:hover {
-            text-decoration: underline;
-        }
-
-        /* TABLE STYLES */
-        .data-table {
+        /* TABLE */
+        table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
         }
 
-        .data-table th {
+        th {
+            padding: 8px;
+            color: #555;
+            background: #f4f5f7;
+            font-size: 0.72rem;
+            font-weight: 600;
             text-align: left;
-            padding: 0.75rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            background: #f8fafc;
-            border-radius: 6px;
         }
 
-        .data-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            color: var(--text-main);
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--line);
         }
 
-        .book-title {
-            font-weight: 600;
-            color: var(--navy-dark);
-            display: block;
-        }
+        .book { font-weight: 600; color: #222; }
+        .borrower { display: block; margin-top: 2px; color: var(--muted); font-size: 0.75rem; }
 
-        .borrower-name {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-        }
-
-        .badge-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.7rem;
             font-weight: 600;
         }
-
-        .status-pending { background: #fef3c7; color: #b45309; }
-        .status-approved, .status-borrowed { background: #dbeafe; color: #1d4ed8; }
-        .status-returned { background: #d1fae5; color: #047857; }
-        .status-overdue, .status-rejected, .status-lost { background: #ffe4e6; color: #be123c; }
+        .status.pending { color: #966313; background: var(--yellow-soft); }
+        .status.borrowed { color: #3d6484; background: var(--blue-soft); }
+        .status.returned, .status.approved { color: #327469; background: var(--teal-soft); }
+        .status.overdue, .status.lost, .status.rejected { color: #9b3d35; background: #fbe6e3; }
 
         .empty-state {
+            padding: 24px 0;
+            color: var(--muted);
             text-align: center;
-            padding: 2.5rem 1rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
         }
 
-        /* QUICK ACTIONS */
-        .action-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
+        .quick-actions { display: grid; gap: 8px; }
 
-        .action-btn {
+        .action {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0.85rem 1rem;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--navy-dark);
-            font-size: 0.88rem;
-            font-weight: 600;
+            gap: 10px;
+            padding: 10px 12px;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            font-size: 0.82rem;
             text-decoration: none;
-            transition: all 0.2s ease;
+            background: #fafafa;
         }
 
-        .action-btn:hover {
-            background: #ffffff;
-            border-color: var(--accent-gold);
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.12);
-            transform: translateX(2px);
+        .action:hover {
+            border-color: var(--blue-main);
+            background: #f0f7fb;
         }
 
         .action-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--accent-soft);
-            color: var(--accent-gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: var(--orange);
+            font-weight: 700;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .content-grid { grid-template-columns: 1fr; }
+        .notice {
+            margin-top: 16px;
+            padding: 14px;
+            color: #73562c;
+            background: var(--yellow-soft);
+            border-left: 3px solid var(--orange);
+            font-size: 0.78rem;
+            line-height: 1.4;
         }
 
-        @media (max-width: 768px) {
-            .app-layout { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
             aside { display: none; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -512,151 +411,93 @@
         $adminInitial = strtoupper(substr($adminUsername, 0, 1));
     @endphp
 
-    <div class="app-layout">
+    <div class="layout">
         <!-- SIDEBAR -->
         <aside>
-            <div class="sidebar-brand">
-                <div class="brand-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                </div>
-                <span class="brand-text">Perpusku</span>
+            <div class="brand">
+                <span class="brand-mark">P</span> Perpusku
             </div>
 
-            <div class="admin-profile-card">
-                <div class="admin-avatar">{{ $adminInitial }}</div>
-                <div class="admin-info">
-                    <div class="admin-username">{{ $adminUsername }}</div>
-                    <span class="admin-badge">Administrator</span>
+            <div class="profile">
+                <span class="profile-avatar">{{ $adminInitial }}</span>
+                <div>
+                    <div class="profile-name">{{ $adminUsername }}</div>
+                    <span class="profile-role">Administrator</span>
                 </div>
             </div>
 
-            <div class="nav-section">
-                <div class="nav-label">Navigasi Utama</div>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="{{ route('admin.dashboard') }}" class="active">
-                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">
-                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
-                            <span>Manajemen Buku</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">
-                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
-                            <span>Manajemen User</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">
-                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></span>
-                            <span>Peminjaman</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">
-                            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                            <span>Pengembalian</span>
-                        </a>
-                    </li>
-                </ul>
+            <nav aria-label="Navigasi admin">
+                <div class="nav-label">Main navigation</div>
+                <a class="active" href="{{ route('admin.dashboard') }}"><span class="icon">⌂</span> Dashboard</a>
+                <a href="#"><span class="icon">▤</span> Manajemen Buku</a>
+                <a href="#"><span class="icon">♙</span> Manajemen User</a>
+                <a href="#"><span class="icon">↔</span> Peminjaman</a>
+                <a href="#"><span class="icon">✓</span> Pengembalian</a>
+                <a href="#"><span class="icon">▦</span> QR Code</a>
+                <a href="#"><span class="icon">◌</span> Notifikasi WA</a>
+                <a href="#"><span class="icon">▥</span> Laporan</a>
 
-                <div class="nav-label">Pengaturan</div>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <form method="POST" action="{{ route('admin.logout') }}">
-                            @csrf
-                            <button type="submit">
-                                <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>
-                                <span>Logout</span>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+                <div class="nav-label">Setting</div>
+                <form method="POST" action="{{ route('admin.logout') }}">
+                    @csrf
+                    <button type="submit"><span class="icon">↪</span> Logout</button>
+                </form>
+            </nav>
 
             <div class="sidebar-footer">
-                Perpusku System &copy; {{ date('Y') }}
+                Panel admin<br>Perpustakaan digital
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- MAIN AREA -->
         <main>
-            <!-- TOP HEADER BAR -->
-            <header class="top-header">
-                <div class="header-title-area">
-                    <h2 class="header-greeting">Selamat datang kembali, <span>{{ $adminUsername }}</span></h2>
+            <!-- TOPBAR (CLEAN, SHOWS ACTIVE ADMIN USERNAME) -->
+            <div class="topbar">
+                <div class="topbar-brand-sub">Panel Administrasi Perpustakaan</div>
+                <div class="topbar-user">
+                    <span>{{ $adminUsername }}</span>
+                    <span class="topbar-avatar">{{ $adminInitial }}</span>
                 </div>
+            </div>
 
-                <div class="user-top-profile">
-                    <div class="user-top-avatar">{{ $adminInitial }}</div>
-                    <span class="user-top-username">{{ $adminUsername }}</span>
-                </div>
-            </header>
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                <header>
+                    <h1>Dashboard Admin</h1>
+                </header>
 
-            <!-- DASHBOARD BODY -->
-            <div class="dashboard-body">
-                <div class="page-heading">
-                    <h1 class="page-title">Dashboard Overview</h1>
-                    <p class="page-subtitle">Ringkasan statistik dan aktivitas perpustakaan hari ini.</p>
-                </div>
-
-                <!-- STATS GRID -->
-                <section class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">Total Koleksi Buku</span>
-                            <div class="stat-icon icon-blue">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                            </div>
-                        </div>
+                <!-- STATS BOXES -->
+                <section class="stats" aria-label="Statistik perpustakaan">
+                    <article class="stat">
                         <div class="stat-value">{{ number_format($stats['books']) }}</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">Sedang Dipinjam</span>
-                            <div class="stat-icon icon-amber">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            </div>
-                        </div>
+                        <div class="stat-label">Total Koleksi Buku</div>
+                        <div class="stat-footer">Data Perpustakaan</div>
+                    </article>
+                    <article class="stat">
                         <div class="stat-value">{{ number_format($stats['activeLoans']) }}</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">Anggota Aktif</span>
-                            <div class="stat-icon icon-emerald">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                            </div>
-                        </div>
+                        <div class="stat-label">Sedang Dipinjam</div>
+                        <div class="stat-footer">Data Perpustakaan</div>
+                    </article>
+                    <article class="stat">
                         <div class="stat-value">{{ number_format($stats['activeMembers']) }}</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">Terlambat Kembali</span>
-                            <div class="stat-icon icon-rose">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                            </div>
-                        </div>
+                        <div class="stat-label">Anggota Aktif</div>
+                        <div class="stat-footer">Data Perpustakaan</div>
+                    </article>
+                    <article class="stat">
                         <div class="stat-value">{{ number_format($stats['overdueLoans']) }}</div>
-                    </div>
+                        <div class="stat-label">Terlambat Dikembalikan</div>
+                        <div class="stat-footer">Data Perpustakaan</div>
+                    </article>
                 </section>
 
-                <!-- CONTENT GRID -->
                 <div class="content-grid">
-                    <!-- RECENT LOANS TABLE -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Peminjaman Terbaru</h3>
-                            <a href="#" class="panel-action-link">Lihat Semua</a>
+                    <!-- RECENT LOANS -->
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <h2>Peminjaman Terbaru</h2>
+                            <a class="panel-link" href="#">Lihat semua</a>
                         </div>
-                        <table class="data-table">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Buku & Peminjam</th>
@@ -679,12 +520,12 @@
                                     @endphp
                                     <tr>
                                         <td>
-                                            <span class="book-title">{{ $loan->title }}</span>
-                                            <span class="borrower-name">{{ $loan->borrower }}</span>
+                                            <span class="book">{{ $loan->title }}</span>
+                                            <span class="borrower">{{ $loan->borrower }}</span>
                                         </td>
                                         <td>{{ date('d M Y', strtotime($loan->loan_date)) }}</td>
                                         <td>
-                                            <span class="badge-status status-{{ $loan->status }}">
+                                            <span class="status {{ $loan->status }}">
                                                 {{ $statusLabels[$loan->status] ?? ucfirst($loan->status) }}
                                             </span>
                                         </td>
@@ -696,32 +537,24 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
+                    </section>
 
                     <!-- QUICK ACTIONS -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <h3 class="panel-title">Aksi Cepat</h3>
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <h2>Aksi Cepat</h2>
                         </div>
-                        <div class="action-list">
-                            <a href="#" class="action-btn">
-                                <span class="action-icon">+</span>
-                                <span>Tambah Buku Baru</span>
-                            </a>
-                            <a href="#" class="action-btn">
-                                <span class="action-icon">✓</span>
-                                <span>Tinjau Pengajuan</span>
-                            </a>
-                            <a href="#" class="action-btn">
-                                <span class="action-icon">▦</span>
-                                <span>Buat QR Code</span>
-                            </a>
-                            <a href="#" class="action-btn">
-                                <span class="action-icon">↓</span>
-                                <span>Unduh Laporan</span>
-                            </a>
+                        <div class="quick-actions">
+                            <a class="action" href="#"><span class="action-icon">+</span> Tambah buku baru</a>
+                            <a class="action" href="#"><span class="action-icon">✓</span> Tinjau pengajuan</a>
+                            <a class="action" href="#"><span class="action-icon">▦</span> Buat QR Code</a>
+                            <a class="action" href="#"><span class="action-icon">↓</span> Unduh laporan</a>
                         </div>
-                    </div>
+                        <div class="notice">
+                            <strong>{{ number_format($stats['overdueLoans']) }} pinjaman terlambat.</strong><br>
+                            Data ditampilkan langsung dari database perpustakaan.
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
