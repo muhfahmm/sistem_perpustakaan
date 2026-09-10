@@ -13,7 +13,7 @@ class EnsureAdminIsActive
     {
         $user = Auth::guard('admin')->user();
 
-        if ($user && ($user->status !== 'active' || !$user->is_active)) {
+        if ($user && $user->status !== 'active') {
             Auth::guard('admin')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

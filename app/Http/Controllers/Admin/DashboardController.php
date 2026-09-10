@@ -12,17 +12,17 @@ class DashboardController extends Controller
         $activeLoanStatuses = ['approved', 'borrowed', 'overdue'];
 
         $stats = [
-            'books' => DB::table('books')->count(),
-            'activeLoans' => DB::table('loans')->whereIn('status', $activeLoanStatuses)->count(),
-            'activeMembers' => DB::table('users')->whereIn('role', ['petugas', 'user'])->where('is_active', true)->count(),
-            'overdueLoans' => DB::table('loans')->where('status', 'overdue')->count(),
+            'books' => DB::table('tb_books')->count(),
+            'activeLoans' => DB::table('tb_loans')->whereIn('status', $activeLoanStatuses)->count(),
+            'activeMembers' => DB::table('tb_user')->where('is_active', true)->count(),
+            'overdueLoans' => DB::table('tb_loans')->where('status', 'overdue')->count(),
         ];
 
-        $recentLoans = DB::table('loans')
-            ->join('users', 'users.id', '=', 'loans.user_id')
-            ->join('books', 'books.id', '=', 'loans.book_id')
-            ->select('books.title', 'users.name as borrower', 'loans.loan_date', 'loans.status')
-            ->latest('loans.created_at')
+        $recentLoans = DB::table('tb_loans')
+            ->join('tb_user', 'tb_user.id', '=', 'tb_loans.user_id')
+            ->join('tb_books', 'tb_books.id', '=', 'tb_loans.book_id')
+            ->select('tb_books.title', 'tb_user.name as borrower', 'tb_loans.loan_date', 'tb_loans.status')
+            ->latest('tb_loans.created_at')
             ->limit(5)
             ->get();
 
