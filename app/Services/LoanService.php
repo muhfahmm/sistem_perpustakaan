@@ -77,6 +77,60 @@ class LoanService
         }, 3);
     }
 
+    public function createOnsiteLoan(int $userId, int $bookId, int $adminId, string $dueDate, ?string $notes = null): Loan
+    {
+        return DB::transaction(function () use ($userId, $bookId, $adminId, $dueDate, $notes) {
+            $book = Book::query()->whereKey($bookId)->lockForUpdate()->first();
+            if (!$book) {
+                throw new LoanException('Buku tidak ditemukan.');
+            }
+
+            if ($book->tersedia < 1) {
+                throw new LoanException('Stok buku tidak tersedia.');
+            }
+
+            $activeStatuses = [LoanStatus::PENDING->value, LoanStatus::BORROWED->value, LoanStatus::OVERDUE->value];
+            $hasActive = Loan::query()
+                ->where('user_id', $userId)
+                ->where('buku_id', $bookId)
+                ->whereIn('status', $activeStatuses)
+                ->lockForUpdate()
+                ->exists();
+
+            if ($hasActive) {
+                throw new LoanException('Siswa ini masih memiliki pinjaman aktif untuk buku ini.');
+            }
+
+            $activeCount = Loan::query()->where('user_id', $userId)->whereIn('status', $activeStatuses)->count();
+            $maxActive = (int) config('library.max_active_loans', 3);
+            if ($activeCount >= $maxActive) {
+                throw new LoanException("Siswa telah mencapai batas maksimal {$maxActive} pinjaman aktif.");
+            }
+
+            $loan = Loan::create([
+                'kode_pinjam' => $this->generateLoanCode(),
+                'user_id' => $userId,
+                'buku_id' => $bookId,
+                'disetujui_oleh' => $adminId,
+                'tanggal_pinjam' => now()->toDateString(),
+                'jatuh_tempo' => $dueDate,
+                'status' => LoanStatus::BORROWED,
+                'catatan' => $notes,
+            ]);
+
+            $book->decrement('tersedia');
+
+            LoanLog::create([
+                'pinjaman_id' => $loan->id,
+                'aksi' => 'created_onsite',
+                'aktor_id' => $adminId,
+                'keterangan' => "Peminjaman on-site langsung dibuat oleh admin, jatuh tempo {$dueDate}.",
+            ]);
+
+            return $loan;
+        }, 3);
+    }
+
     public function approveLoan(Loan $loan, int $adminId, string $dueDate): Loan
     {
         return DB::transaction(function () use ($loan, $adminId, $dueDate) {

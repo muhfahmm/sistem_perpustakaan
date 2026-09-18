@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LoanController as AdminLoanController;
 use App\Http\Controllers\Admin\ReturnController;
-use App\Http\Controllers\Admin\QrCodeController;
+use App\Http\Controllers\Admin\ScanController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\User\LoanController as UserLoanController;
@@ -31,11 +31,16 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class);
         Route::get('/books/lookup-isbn', [BookController::class, 'lookupIsbn'])->name('books.lookup_isbn');
         Route::resource('books', BookController::class);
-        Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);
+        Route::resource('users', UserController::class);
 
         Route::get('/loans', [AdminLoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [AdminLoanController::class, 'reject'])->name('loans.reject');
+
+        Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+        Route::post('/scan/lookup-user', [ScanController::class, 'lookupUser'])->name('scan.lookup_user');
+        Route::post('/scan/lookup-book', [ScanController::class, 'lookupBook'])->name('scan.lookup_book');
+        Route::post('/scan/store-onsite', [ScanController::class, 'storeOnsite'])->name('scan.store_onsite');
 
         Route::get('/returns', [ReturnController::class, 'index'])->name('returns.index');
         Route::post('/returns/scan', [ReturnController::class, 'scan'])->name('returns.scan');

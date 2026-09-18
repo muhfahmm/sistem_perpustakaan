@@ -3,8 +3,9 @@
 @section('title', 'Manajemen User')
 
 @section('content')
-<header style="margin-bottom: 20px;">
+<header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
     <h1>Manajemen User / Anggota</h1>
+    <a href="{{ route('admin.users.create') }}" class="btn btn-primary">+ Tambah Anggota Baru</a>
 </header>
 
 <section class="panel">
@@ -16,38 +17,45 @@
         </form>
     </div>
 
-    <table>
+    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
+                <th style="width: 60px; text-align: center;">No</th>
                 <th>Nama Anggota</th>
                 <th>Email</th>
                 <th>No. WhatsApp</th>
-                <th>Status</th>
-                <th>Terdaftar</th>
-                <th>Aksi</th>
+                <th style="width: 120px; text-align: center;">Status</th>
+                <th style="width: 140px; text-align: center;">Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($users as $user)
+            @forelse ($users as $index => $user)
                 <tr>
-                    <td><strong style="color: #222;">{{ $user->name }}</strong></td>
+                    <td style="text-align: center; color: #64748b;">{{ $users->firstItem() + $index }}</td>
+                    <td><strong style="color: #0f172a; font-size: 0.9rem;">{{ $user->nama }}</strong></td>
                     <td>{{ $user->email }}</td>
-                    <td><code>{{ $user->phone }}</code></td>
-                    <td>
-                        @if ($user->is_active)
-                            <span style="display: inline-block; padding: 2px 8px; background: #d4edda; color: #155724; border-radius: 3px; font-size: 0.72rem; font-weight: 600;">Aktif</span>
+                    <td><code>{{ $user->telepon }}</code></td>
+                    <td style="text-align: center;">
+                        @if ($user->status_aktif)
+                            <span style="display: inline-block; padding: 3px 10px; background: #dcfce7; color: #15803d; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Aktif</span>
                         @else
-                            <span style="display: inline-block; padding: 2px 8px; background: #f8d7da; color: #721c24; border-radius: 3px; font-size: 0.72rem; font-weight: 600;">Nonaktif</span>
+                            <span style="display: inline-block; padding: 3px 10px; background: #fee2e2; color: #991b1b; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Nonaktif</span>
                         @endif
                     </td>
-                    <td>{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</td>
-                    <td>
-                        <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-secondary" style="font-size: 0.75rem;">Edit Status</a>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                            <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;">Edit</a>
+                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus anggota ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #dc2626; border-color: #fecaca; background: #fff5f5;">Hapus</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; color: #68777d; padding: 24px;">Belum ada anggota terdaftar.</td>
+                    <td colspan="6" style="text-align: center; color: #64748b; padding: 28px;">Belum ada anggota terdaftar. Klik "+ Tambah Anggota Baru" untuk mendaftar.</td>
                 </tr>
             @endforelse
         </tbody>
