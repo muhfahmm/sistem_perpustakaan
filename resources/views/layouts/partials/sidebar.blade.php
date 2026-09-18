@@ -19,19 +19,25 @@
     </div>
 
     <nav aria-label="Navigasi admin">
-        <div class="nav-label">Main navigation</div>
+        <div class="nav-label">Navigasi Utama</div>
 
         <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <span class="icon">⌂</span> Dashboard
+        </a>
+
+        <div class="nav-label">Katalog & Buku</div>
+
+        <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <span class="icon">🏷</span> Kategori Buku
         </a>
 
         <a href="{{ route('admin.books.index') }}" class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
             <span class="icon">▤</span> Manajemen Buku
         </a>
 
-        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <span class="icon">♙</span> Manajemen User
-        </a>
+        <div class="nav-label">Sirkulasi & Transaksi</div>
+
+
 
         <a href="{{ route('admin.loans.index') }}" class="{{ request()->routeIs('admin.loans.*') ? 'active' : '' }}">
             <span class="icon">↔</span> Peminjaman
@@ -41,9 +47,13 @@
             <span class="icon">✓</span> Pengembalian
         </a>
 
-        <a href="{{ route('admin.qrcode.scanner') }}" class="{{ request()->routeIs('admin.qrcode.scanner') ? 'active' : '' }}">
-            <span class="icon">🔌</span> Fast Scanner
+        <div class="nav-label">Pengguna</div>
+
+        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            <span class="icon">♙</span> Manajemen User
         </a>
+
+        <div class="nav-label">Alat & Laporan</div>
 
         <a href="{{ route('admin.qrcode.index') }}" class="{{ request()->routeIs('admin.qrcode.index') ? 'active' : '' }}">
             <span class="icon">▦</span> Cetak QR Code
@@ -54,10 +64,10 @@
         </a>
 
         <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-            <span class="icon">▥</span> Laporan
+            <span class="icon">▥</span> Laporan Sirkulasi
         </a>
 
-        <div class="nav-label">Setting</div>
+        <div class="nav-label">Pengaturan</div>
         <form method="POST" action="{{ route('admin.logout') }}">
             @csrf
             <button type="submit"><span class="icon">↪</span> Logout</button>
@@ -65,6 +75,6 @@
     </nav>
 
     <div class="sidebar-footer">
-        Panel admin<br>Perpustakaan digital
+        Panel Admin<br>Perpustakaan Digital
     </div>
 </aside>

@@ -10,7 +10,6 @@ USE db_perpus;
 CREATE TABLE tb_admin (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(150) UNIQUE NULL,
     password VARCHAR(255) NOT NULL,
     status ENUM('active', 'suspended', 'banned') DEFAULT 'active',
     last_login_at TIMESTAMP NULL,

@@ -23,13 +23,11 @@ class AdminRegisterController extends Controller
     {
         $data = $request->validate([
             'username' => ['required', 'string', 'max:100', 'unique:tb_admin,username'],
-            'email' => ['required', 'email', 'max:150', 'unique:tb_admin,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $admin = Admin::create([
             'username' => strtolower($data['username']),
-            'email' => strtolower($data['email']),
             'password' => Hash::make($data['password']),
             'status' => 'active',
         ]);

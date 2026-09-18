@@ -10,10 +10,10 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $notifications = DB::table('tb_notifications')
-            ->join('tb_user', 'tb_user.id', '=', 'tb_notifications.user_id')
-            ->select('tb_notifications.*', 'tb_user.name as user_name')
-            ->latest('tb_notifications.created_at')
+        $notifications = DB::table('tb_notifikasi')
+            ->join('tb_user', 'tb_user.id', '=', 'tb_notifikasi.user_id')
+            ->select('tb_notifikasi.*', 'tb_user.nama as user_name')
+            ->orderByDesc('tb_notifikasi.id')
             ->paginate(10);
 
         return view('admin.notifications.index', compact('notifications'));

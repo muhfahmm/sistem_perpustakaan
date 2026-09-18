@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AdminRegisterController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LoanController as AdminLoanController;
@@ -27,6 +28,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
+        Route::resource('categories', CategoryController::class);
         Route::get('/books/lookup-isbn', [BookController::class, 'lookupIsbn'])->name('books.lookup_isbn');
         Route::resource('books', BookController::class);
         Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);

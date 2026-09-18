@@ -55,13 +55,13 @@
         <tbody>
             @forelse ($recentReports as $report)
                 <tr>
-                    <td><code>{{ $report->loan_code }}</code></td>
+                    <td><code>{{ $report->kode_pinjam }}</code></td>
                     <td>
                         <strong style="color: #222;">{{ $report->book_title }}</strong>
                         <span style="display: block; font-size: 0.75rem; color: #68777d;">{{ $report->borrower }}</span>
                     </td>
-                    <td>{{ date('d M Y', strtotime($report->loan_date)) }}</td>
-                    <td>{{ date('d M Y', strtotime($report->due_date)) }}</td>
+                    <td>{{ date('d M Y', strtotime($report->tanggal_pinjam)) }}</td>
+                    <td>{{ date('d M Y', strtotime($report->jatuh_tempo)) }}</td>
                     <td><span class="status {{ $report->status }}">{{ ucfirst($report->status) }}</span></td>
                 </tr>
             @empty
