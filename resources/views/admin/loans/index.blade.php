@@ -12,14 +12,14 @@
         <h2>Transaksi Peminjaman</h2>
     </div>
 
-    <table>
+    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
-                <th>Kode Transaksi</th>
+                <th style="width: 170px;">Kode Transaksi</th>
                 <th>Buku & Peminjam</th>
-                <th>Tgl Pinjam / Jatuh Tempo</th>
-                <th>Status</th>
-                <th>Aksi Persetujuan</th>
+                <th style="width: 180px;">Tgl Pinjam / Jatuh Tempo</th>
+                <th style="width: 160px; text-align: center;">Status</th>
+                <th style="width: 150px; text-align: center;">Aksi Persetujuan</th>
             </tr>
         </thead>
         <tbody>
@@ -36,38 +36,44 @@
                     ];
                 @endphp
                 <tr>
-                    <td><code>{{ $loan->loan_code }}</code></td>
+                    <td><code>{{ $loan->kode_pinjam }}</code></td>
                     <td>
-                        <strong style="color: #222;">{{ $loan->book->title ?? '-' }}</strong>
-                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Peminjam: {{ $loan->user->name ?? '-' }}</span>
+                        <strong style="color: #0f172a;">{{ $loan->book->judul ?? '-' }}</strong>
+                        <span style="display: block; font-size: 0.75rem; color: #64748b;">Peminjam: {{ $loan->user->nama ?? '-' }}</span>
                     </td>
                     <td>
-                        {{ date('d M Y', strtotime($loan->loan_date)) }}
-                        <span style="display: block; font-size: 0.75rem; color: #dd4b39;">Jatuh Tempo: {{ date('d M Y', strtotime($loan->due_date)) }}</span>
+                        {{ $loan->tanggal_pinjam ? $loan->tanggal_pinjam->format('d M Y') : '-' }}
+                        <span style="display: block; font-size: 0.75rem; color: #dc2626;">Jatuh Tempo: {{ $loan->jatuh_tempo ? $loan->jatuh_tempo->format('d M Y') : '-' }}</span>
                     </td>
-                    <td>
-                        <span class="status {{ $loan->status }}">{{ $statusLabels[$loan->status] ?? ucfirst($loan->status) }}</span>
+                    <td style="text-align: center;">
+                        @php
+                            $statusVal = is_object($loan->status) ? $loan->status->value : $loan->status;
+                        @endphp
+                        <span class="status {{ $statusVal }}">{{ $statusLabels[$statusVal] ?? ucfirst($statusVal) }}</span>
                     </td>
-                    <td>
-                        @if ($loan->status === 'pending')
+                    <td style="text-align: center;">
+                        @php
+                            $statusVal = is_object($loan->status) ? $loan->status->value : $loan->status;
+                        @endphp
+                        @if ($statusVal === 'pending')
                             <form method="POST" action="{{ route('admin.loans.approve', $loan) }}" style="display: inline-block;">
                                 @csrf
                                 <input type="hidden" name="due_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}">
-                                <button type="submit" class="btn btn-success" style="font-size: 0.75rem;">Approve</button>
+                                <button type="submit" class="btn btn-success" style="padding: 4px 10px; font-size: 0.75rem;">Approve</button>
                             </form>
 
-                            <form method="POST" action="{{ route('admin.loans.reject', $loan) }}" style="display: inline-block;">
+                            <form method="POST" action="{{ route('admin.loans.reject', $loan) }}" style="display: inline-block;" onsubmit="return confirm('Tolak pengajuan peminjaman ini?')">
                                 @csrf
-                                <button type="submit" class="btn btn-secondary" style="font-size: 0.75rem; color: #dd4b39;">Tolak</button>
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #dc2626; border-color: #fecaca; background: #fff5f5;">Tolak</button>
                             </form>
                         @else
-                            <span style="font-size: 0.75rem; color: #999;">- Selesai -</span>
+                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 500;">- Selesai -</span>
                         @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #68777d; padding: 24px;">Belum ada pengajuan peminjaman.</td>
+                    <td colspan="5" style="text-align: center; color: #64748b; padding: 28px;">Belum ada pengajuan peminjaman.</td>
                 </tr>
             @endforelse
         </tbody>

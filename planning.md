@@ -1,455 +1,589 @@
-# 🔌 Integrasi Scanner EZCode dengan Sistem Perpustakaan Laravel
+# 🎯 Skenario: Peminjaman On-Site dengan Nota QR
 
-Barcode yang Anda scan — `9786233100267` — adalah **EAN-13 / ISBN-13** (13 digit, diawali `978`). Ini kabar bagus: formatnya standar internasional untuk buku, jadi bisa langsung divalidasi dan dipetakan ke tabel `books.isbn`.
-
-Scanner EZCode USB Anda bekerja sebagai **USB HID Keyboard** — begitu dicolok, OS mengenalinya sebagai keyboard. Saat scan, ia "mengetik" `9786233100267` lalu menekan **Enter** secara otomatis. Jadi secara teknis, **tidak perlu driver** dan **langsung jalan** di web app. Tapi untuk produksi, tetap ada beberapa hal yang **wajib dioptimalkan** agar tidak bug.
+Sempurna! Ini skenario paling praktis dan paling umum di perpustakaan sekolah. Saya rancang lengkap dari **awal sampai akhir**.
 
 ---
 
-## 1️⃣ Cara Kerja EZCode di Web App
+## 🎬 ALUR LENGKAP — Step by Step
 
-```
-[Scan barcode buku]
-        ↓
-EZCode mengirim: "9786233100267" + [Enter]
-        ↓
-Browser menerima sebagai ketikan keyboard
-        ↓
-Input field di halaman web menangkap karakter + Enter
-        ↓
-JavaScript mendeteksi Enter → submit form via AJAX
-        ↓
-Backend Laravel proses → cek stok, cek duplikasi, simpan loan
-```
-
-Tanpa konfigurasi apa pun, scanner ini sudah "bicara" ke browser. Yang perlu Anda siapkan adalah **halaman web yang siap menerima input tersebut**.
+### 📍 Skenario:
+> Ahmad (siswa) datang ke perpustakaan bawa buku **Laskar Pelangi** yang mau dipinjam. Admin di meja jaga scan buku + scan kartu siswa, sistem langsung cetak **nota QR**, dan data tersimpan di database untuk pengingat pengembalian otomatis.
 
 ---
 
-## 2️⃣ Optimasi Frontend (Halaman Scanner)
+## 🚶 STEP 1 — Siswa Datang ke Perpustakaan
 
-### A. Auto-Focus + Auto-Submit
+Ahmad datang ke meja admin, bawa:
+- 📚 Buku yang mau dipinjam
+- 🎫 Kartu siswa (atau sebutkan NIS/Nama)
 
-Masalah umum: user harus klik dulu ke input field setiap kali scan. Solusinya:
+---
 
-```blade
-<!-- resources/views/admin/scan/index.blade.php -->
-<form id="scanForm" action="{{ route('admin.scan.process') }}" method="POST">
-    @csrf
-    <input 
-        type="text" 
-        id="barcodeInput" 
-        name="barcode" 
-        autofocus
-        autocomplete="off"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="Scan barcode buku..."
-        class="w-full text-2xl p-4 font-mono"
-    >
-</form>
+## 💻 STEP 2 — Admin Buka Halaman On-Site Scan
 
-<script>
-const input = document.getElementById('barcodeInput');
-const form  = document.getElementById('scanForm');
+Admin buka: `/admin-panel/scan` (mode: **Peminjaman**)
 
-// Fokus otomatis di mana pun user klik
-document.addEventListener('click', () => input.focus());
-window.addEventListener('load', () => input.focus());
+Halaman siap, input auto-focus:
 
-// Auto-submit saat scanner kirim Enter
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && input.value.trim() !== '') {
-        e.preventDefault();
-        submitBarcode(input.value.trim());
-    }
-});
-</script>
 ```
-
-### B. Deteksi Kecepatan Input (Scanner vs Manusia)
-
-Scanner EZCode mengetik **sangat cepat** (biasanya < 30ms antar karakter), sedangkan manusia > 100ms. Ini bisa dimanfaatkan untuk membedakan input scanner dari input manual:
-
-```javascript
-let lastKeyTime = 0;
-let buffer = '';
-const SCANNER_SPEED = 50; // ms
-
-input.addEventListener('keypress', (e) => {
-    const now = Date.now();
-    const diff = now - lastKeyTime;
-    lastKeyTime = now;
-
-    // Kalau jeda terlalu lama → berarti manusia ngetik
-    if (diff > SCANNER_SPEED) buffer = '';
-    buffer += e.key;
-
-    if (e.key === 'Enter' && buffer.length > 5) {
-        // Kemungkinan besar dari scanner
-        console.log('Scanner detected:', buffer);
-    }
-});
-```
-
-### C. Anti Double-Scan (Cooldown)
-
-Kadang scanner bisa trigger 2x dalam 1 detik. Tambahkan cooldown:
-
-```javascript
-let lastScanned = null;
-let lastScannedTime = 0;
-const COOLDOWN = 2000; // 2 detik
-
-function submitBarcode(code) {
-    const now = Date.now();
-    
-    // Abaikan kalau scan sama dalam 2 detik terakhir
-    if (code === lastScanned && now - lastScannedTime < COOLDOWN) {
-        console.log('Duplicate scan ignored');
-        return;
-    }
-    
-    lastScanned = code;
-    lastScannedTime = now;
-    
-    // Kirim ke backend via AJAX
-    fetch(form.action, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-        },
-        body: JSON.stringify({ barcode: code }),
-    })
-    .then(res => res.json())
-    .then(data => {
-        showResult(data);
-        input.value = ''; // reset untuk scan berikutnya
-        input.focus();
-    });
-}
-```
-
-### D. Feedback Suara & Visual
-
-Admin sering scan sambil berdiri, tidak selalu lihat layar. Tambahkan feedback:
-
-```javascript
-function playBeep(success) {
-    const audio = new Audio(success 
-        ? '/sounds/beep-success.mp3' 
-        : '/sounds/beep-error.mp3');
-    audio.volume = 0.5;
-    audio.play();
-}
-
-function showResult(data) {
-    playBeep(data.success);
-    
-    const banner = document.getElementById('resultBanner');
-    banner.className = data.success 
-        ? 'bg-green-500 text-white p-6 text-2xl rounded'
-        : 'bg-red-500 text-white p-6 text-2xl rounded';
-    banner.textContent = data.message;
-    banner.classList.remove('hidden');
-    
-    setTimeout(() => banner.classList.add('hidden'), 3000);
-}
+┌──────────────────────────────────────────────┐
+│  📚 PEMINJAMAN ON-SITE                       │
+│  ──────────────────────────────────────────  │
+│                                              │
+│  ┌────────────────────────────────────┐     │
+│  │ 📷 Scan kartu siswa...              │     │
+│  │ ▌                                   │     │
+│  └────────────────────────────────────┘     │
+│                                              │
+│  💡 Petunjuk:                                │
+│  1. Scan kartu siswa                        │
+│  2. Scan barcode buku                       │
+│  3. Konfirmasi → Nota tercetak otomatis    │
+│                                              │
+└──────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3️⃣ Optimasi Backend (Laravel)
+## 🎫 STEP 3 — Admin Scan Kartu Siswa
 
-### A. Validasi Format ISBN-13
+Admin ambil kartu siswa → **scan pakai EZCode**
 
-Barcode `9786233100267` adalah ISBN-13. Validasi **checksum**-nya agar tidak sembarang angka masuk:
+Kartu siswa formatnya: `SIS-2024-0001` atau `NIS: 20240001`
 
-```php
-// app/Http/Requests/ScanBarcodeRequest.php
-public function rules(): array
-{
-    return [
-        'barcode' => ['required', 'string', 'regex:/^\d{13}$/'],
-    ];
-}
+Sistem langsung verifikasi:
 
-// app/Services/BarcodeService.php
-public function isValidIsbn13(string $code): bool
-{
-    if (!preg_match('/^\d{13}$/', $code)) return false;
-    
-    // Cek prefix ISBN (978 atau 979)
-    if (!in_array(substr($code, 0, 3), ['978', '979'])) return false;
-    
-    // Cek checksum EAN-13
-    $sum = 0;
-    for ($i = 0; $i < 12; $i++) {
-        $sum += (int)$code[$i] * ($i % 2 === 0 ? 1 : 3);
-    }
-    $checkDigit = (10 - ($sum % 10)) % 10;
-    
-    return $checkDigit === (int)$code[12];
-}
+```
+┌──────────────────────────────────────────────┐
+│  ✅ SISWA TERDETEKSI                         │
+│  ──────────────────────────────────────────  │
+│                                              │
+│  👤 Ahmad Fauzi                             │
+│  🎓 Kelas: XI IPA 2                         │
+│  🆔 NIS: 20240001                           │
+│  📱 WA: 62812xxxxxx                         │
+│                                              │
+│  📊 STATUS:                                  │
+│  ✅ Aktif (tidak blacklist)                  │
+│  📚 Sedang pinjam: 1 buku                    │
+│  🎯 Sisa kuota: 2 buku lagi                  │
+│                                              │
+│  ─────────────────────────────────────────   │
+│  ➡️ Sekarang scan barcode buku...            │
+│                                              │
+│  ┌────────────────────────────────────┐     │
+│  │ 📷 ▌                                │     │
+│  └────────────────────────────────────┘     │
+└──────────────────────────────────────────────┘
 ```
 
-**Untuk `9786233100267`:**
-- Prefix `978` ✅ (ISBN)
-- Checksum: dihitung, digit terakhir `7` harus cocok ✅
+**Kalau ada masalah** (misalnya siswa blacklist atau kuota habis), sistem TOLAK di langkah ini sebelum scan buku.
 
-### B. Identifikasi Tipe Barcode
+---
 
-Sistem perpustakaan Anda mungkin punya **3 jenis barcode**:
+## 📖 STEP 4 — Admin Scan Barcode Buku
 
-| Prefix | Tipe | Contoh |
-|--------|------|--------|
-| `978` / `979` | Buku (ISBN) | `9786233100267` |
-| `AGT-` | Kartu Anggota | `AGT-2024001` |
-| `LN-` | Kode Peminjaman | `LN-20260918-ABC123` |
+Admin ambil buku Laskar Pelangi → **scan barcode-nya** (`9786233100267`)
 
-```php
-public function identify(string $code): array
-{
-    if (preg_match('/^(978|979)\d{10}$/', $code)) {
-        return ['type' => 'book', 'code' => $code];
-    }
-    
-    if (str_starts_with($code, 'AGT-')) {
-        return ['type' => 'member', 'code' => $code];
-    }
-    
-    if (str_starts_with($code, 'LN-')) {
-        return ['type' => 'loan', 'code' => $code];
-    }
-    
-    return ['type' => 'unknown', 'code' => $code];
-}
+Sistem cek dalam **1 transaksi** (semua atau tidak sama sekali):
+
+```
+✓ Buku ada di database
+✓ ISBN valid (checksum OK)
+✓ Stok tersedia (3 → akan jadi 2)
+✓ Siswa belum pinjam buku ini
+✓ Kuota siswa masih ada
+✓ Tidak ada pinjaman aktif duplikat
 ```
 
-### C. Lock Anti Race Condition
+**Kalau semua OK** → muncul konfirmasi:
 
-Kalau ada 2 admin scan barcode yang sama bersamaan, harus dipastikan hanya 1 yang sukses:
+```
+┌──────────────────────────────────────────────┐
+│  📋 KONFIRMASI PEMINJAMAN                    │
+│  ──────────────────────────────────────────  │
+│                                              │
+│  👤 Ahmad Fauzi (XI IPA 2)                  │
+│  📖 Laskar Pelangi                          │
+│  🏷️ ISBN: 9786233100267                     │
+│  📍 Lokasi: Rak A-3                         │
+│                                              │
+│  ─────────────────────────────────────────   │
+│                                              │
+│  📅 TANGGAL PINJAM:                         │
+│  18 September 2026                          │
+│                                              │
+│  📅 JATUH TEMPO:                            │
+│  ┌─────────────────────────────────┐        │
+│  │ 25 September 2026  (7 hari)     │        │
+│  └─────────────────────────────────┘        │
+│                                              │
+│  Quick select:                               │
+│  ○ 3 hari  ● 7 hari  ○ 14 hari  ○ 30 hari  │
+│                                              │
+│  📝 Catatan (opsional):                      │
+│  [Kondisi buku baik_______________]         │
+│                                              │
+│  ┌────────────────┐  ┌────────────────┐     │
+│  │ ✓ KONFIRMASI   │  │ ✗ BATAL        │     │
+│  │  & CETAK NOTA  │  │                │     │
+│  └────────────────┘  └────────────────┘     │
+│                                              │
+└──────────────────────────────────────────────┘
+```
 
-```php
-// app/Http/Controllers/Admin/ScanController.php
-public function process(Request $request, LoanService $loanService)
-{
-    $barcode = $request->validated()['barcode'];
-    
-    // Lock berdasarkan barcode — cegah proses paralel
-    $lock = Cache::lock("scan:{$barcode}", 5);
-    
-    if (!$lock->get()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Barcode sedang diproses, tunggu sebentar.',
-        ], 429);
-    }
-    
-    try {
-        $identified = app(BarcodeService::class)->identify($barcode);
+Admin bisa **ubah jatuh tempo** kalau perlu (misal untuk tugas khusus 14 hari).
+
+---
+
+## ⚡ STEP 5 — Admin Klik [✓ Konfirmasi & Cetak Nota]
+
+**Sistem otomatis dalam 1 detik**:
+
+```
+1. DB Transaction:
+   ├─ LOCK buku (anti race condition)
+   ├─ Cek ulang stok
+   ├─ Kurangi stok: 3 → 2
+   ├─ Insert loan (status: BORROWED)
+   ├─ Insert loan_log (action: 'borrow_onsite')
+   ├─ Update counter user
+   └─ COMMIT
+
+2. Generate QR Code:
+   ├─ Isi QR: LN-20260918-ABC123
+   ├─ Simpan: storage/private/qrcodes/
+   └─ Tanda tangan HMAC (anti pemalsuan)
+
+3. Kirim ke Printer:
+   └─ Print nota otomatis (printer thermal/USB)
+
+4. Kirim WA ke siswa (opsional):
+   └─ "Buku Laskar Pelangi berhasil dipinjam.
+      Jatuh tempo: 25 Sep 2026."
+
+5. Bunyi Beep ✅ sukses
+
+6. Reset halaman → siap scan siswa berikutnya
+```
+
+---
+
+## 🖨️ STEP 6 — Nota Tercetak Otomatis
+
+**Format nota ukuran kertas thermal 80mm** (seperti struk minimarket):
+
+```
+================================
+   📚 PERPUSTAKAAN DIGITAL
+      SMP NEGERI 1 JAKARTA
+================================
+   NOTA PEMINJAMAN BUKU
+================================
+
+No. Nota : LN-20260918-ABC123
+Tanggal  : 18 Sep 2026, 10:23
+
+--------------------------------
+PEMINJAM
+--------------------------------
+Nama     : Ahmad Fauzi
+Kelas    : XI IPA 2
+NIS      : 20240001
+
+--------------------------------
+BUKU DIPINJAM
+--------------------------------
+Judul    : Laskar Pelangi
+ISBN     : 9786233100267
+Pengarang: Andrea Hirata
+Lokasi   : Rak A-3
+
+--------------------------------
+TANGGAL
+--------------------------------
+Pinjam      : 18 Sep 2026
+Jatuh Tempo : 25 Sep 2026
+Durasi      : 7 hari
+
+--------------------------------
+        [QR CODE]
+     Scan untuk pengembalian
         
-        return match ($identified['type']) {
-            'book'   => $this->handleBookScan($identified['code']),
-            'member' => $this->handleMemberScan($identified['code']),
-            'loan'   => $this->handleLoanScan($identified['code'], $loanService),
-            default  => response()->json([
-                'success' => false,
-                'message' => 'Barcode tidak dikenali.',
-            ], 422),
-        };
-    } finally {
-        $lock->release();
-    }
-}
+     LN-20260918-ABC123
+
+--------------------------------
+
+⚠️  PENGINGAT:
+• Kembalikan sebelum 25 Sep 2026
+• Denda Rp 1.000/hari keterlambatan
+• Simpan nota ini sampai
+  buku dikembalikan
+• Buku yang rusak/hilang
+  wajib diganti
+
+================================
+ Terima kasih 🙏
+================================
 ```
 
-### D. Rate Limiting
-
-Cegah spam request (misal scanner rusak, kirim data terus-menerus):
-
-```php
-// RouteServiceProvider.php
-RateLimiter::for('scan', function (Request $request) {
-    return Limit::perMinute(120)->by($request->user()->id);
-    // 2 scan/detik max — cukup untuk scan cepat
-});
-```
+**Nota ini berisi QR Code** — kunci untuk pengembalian nanti.
 
 ---
 
-## 4️⃣ Konfigurasi Fisik Scanner EZCode
+## 📱 STEP 7 — WA Notifikasi Terkirim (Opsional)
 
-Meskipun EZCode "plug and play", ada beberapa setting yang **sebaiknya dicek** via buku manual (scan barcode konfigurasi):
-
-| Setting | Rekomendasi | Kenapa |
-|---------|-------------|--------|
-| **Interface Mode** | USB HID Keyboard | Default, sudah benar |
-| **Suffix** | Enter/CR | Agar auto-submit form |
-| **Prefix** | (kosong) | Tidak perlu |
-| **Scan Mode** | Single scan | Bukan continuous |
-| **Beep** | ON | Feedback suara |
-| **Keyboard Layout** | US QWERTY | Standar |
-| **Symbology** | EAN-13, Code 128, QR | Sesuai kebutuhan |
-
-> 💡 **Kalau Enter tidak terkirim** setelah scan: cek manual scanner Anda, cari barcode "Suffix Setting" → "Enter/CR". Setiap scanner EZCode biasanya punya buku manual dengan barcode konfigurasi.
-
----
-
-## 5️⃣ Database Tambahan untuk Audit
-
-Tambahkan tabel `scan_logs` untuk mencatat semua scan:
-
-```sql
-CREATE TABLE scan_logs (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    admin_id BIGINT UNSIGNED NOT NULL,
-    barcode VARCHAR(50) NOT NULL,
-    type ENUM('book','member','loan','unknown') NOT NULL,
-    action VARCHAR(50) NULL,
-    result ENUM('success','failed') NOT NULL,
-    loan_id BIGINT UNSIGNED NULL,
-    message VARCHAR(255) NULL,
-    scanned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES users(id),
-    FOREIGN KEY (loan_id) REFERENCES loans(id) ON DELETE SET NULL,
-    INDEX idx_barcode (barcode),
-    INDEX idx_scanned_at (scanned_at)
-) ENGINE=InnoDB;
-```
-
-Simpan setiap scan — berguna untuk debugging kalau ada masalah "kenapa buku ini tidak terdeteksi?".
-
----
-
-## 6️⃣ Flow Lengkap Peminjaman via Scanner EZCode
+Beberapa detik setelah scan, WA Ahmad berdering:
 
 ```
-[Admin buka /admin-panel/scan?mode=borrow]
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ Input auto-focus, siap menerima scan  │
-└───────────────┬───────────────────────┘
-                │
-       [Scan kartu anggota]
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ BarcodeService::identify()            │
-│ → type: 'member'                      │
-│ → tampilkan data user: Ahmad Fauzi    │
-└───────────────┬───────────────────────┘
-                │
-       [Scan barcode buku: 9786233100267]
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ BarcodeService::identify()            │
-│ → type: 'book'                        │
-│ → cari di tabel books WHERE isbn=...  │
-│ → cek stok, cek duplikasi             │
-└───────────────┬───────────────────────┘
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ Tampilkan konfirmasi:                 │
-│ • Buku: Laskar Pelangi                │
-│ • Peminjam: Ahmad Fauzi               │
-│ • Due date: [date picker]             │
-│                                       │
-│ [✓ Konfirmasi] [✗ Batal]              │
-└───────────────┬───────────────────────┘
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ LoanService::createWithApproval()     │
-│ • DB transaction                      │
-│ • lockForUpdate() buku                │
-│ • Generate loan_code + QR             │
-│ • Insert loan_logs + scan_logs        │
-│ • Commit                              │
-└───────────────┬───────────────────────┘
-                │
-                ▼
-┌───────────────────────────────────────┐
-│ ✅ Sukses — bunyi beep                │
-│ Cetak kartu QR? [Ya] [Tidak]          │
-│ Reset untuk scan berikutnya           │
-└───────────────────────────────────────┘
+📚 Perpustakaan Digital
+
+Halo Ahmad Fauzi,
+
+✅ Peminjaman BERHASIL
+
+📖 Buku: Laskar Pelangi
+🏷️ Kode: LN-20260918-ABC123
+📅 Pinjam: 18 Sep 2026
+⏰ Jatuh Tempo: 25 Sep 2026
+
+⚠️ Jangan lupa kembalikan
+sebelum tanggal jatuh tempo ya!
+
+📎 Simpan nota QR Anda
 ```
 
 ---
 
-## 7️⃣ Testing Scanner EZCode Anda
+## 💾 STEP 8 — Data Tersimpan di Database
 
-Sebelum integrasi penuh, lakukan tes sederhana:
+Semua tercatat rapi:
 
-### Tes 1: Cek Scanner di Notepad
-1. Buka Notepad
-2. Scan barcode buku
-3. **Harus muncul:** `9786233100267` lalu kursor pindah ke baris baru (Enter)
+### Tabel `loans`:
+| id | loan_code | user_id | book_id | loan_date | due_date | return_date | status | qr_code_path |
+|----|-----------|---------|---------|-----------|----------|-------------|--------|--------------|
+| 15 | LN-20260918-ABC123 | 42 | 7 | 2026-09-18 | 2026-09-25 | NULL | borrowed | qrcodes/abc123.png |
 
-Kalau **tidak muncul Enter**, berarti suffix scanner belum diset. Scan barcode konfigurasi di manual EZCode → "Suffix Setting" → "Enter".
+### Tabel `books` (stok otomatis berkurang):
+| id | title | stock | available |
+|----|-------|-------|-----------|
+| 7 | Laskar Pelangi | 3 | **2** ← berkurang |
 
-### Tes 2: Cek di Browser
-1. Buka halaman HTML dengan `<input type="text">`
-2. Klik input, scan barcode
-3. **Harus muncul:** `9786233100267` di input
+### Tabel `loan_logs`:
+| id | loan_id | action | actor_id | created_at |
+|----|---------|--------|----------|------------|
+| 45 | 15 | borrow_onsite | 1 (admin) | 2026-09-18 10:23 |
 
-### Tes 3: Cek Format Barcode
-```php
-// Test di Laravel Tinker
-php artisan tinker
->>> $code = '9786233100267';
->>> app(App\Services\BarcodeService::class)->isValidIsbn13($code);
-=> true
+### Tabel `notifications` (untuk reminder):
+| id | loan_id | type | scheduled_at | status |
+|----|---------|------|--------------|--------|
+| 78 | 15 | reminder_h1 | 2026-09-24 08:00 | pending |
+| 79 | 15 | overdue | 2026-09-26 08:00 | pending |
+
+---
+
+## ⏰ STEP 9 — Pengingat Otomatis Berjalan
+
+Sistem cron jalan otomatis setiap hari:
+
+### 🌅 H-1 Sebelum Jatuh Tempo (24 Sep 2026, 08:00)
+
+```
+Cron cek: ada loan yang due_date = besok?
+→ Ketemu: loan#15 (Ahmad Fauzi, Laskar Pelangi)
+
+Sistem kirim WA:
+┌────────────────────────────────────┐
+│ 📚 Perpustakaan Digital            │
+│                                     │
+│ Halo Ahmad Fauzi,                  │
+│                                     │
+│ ⏰ PENGINGAT                        │
+│                                     │
+│ Buku "Laskar Pelangi" jatuh        │
+│ tempo BESOK (25 Sep 2026).         │
+│                                     │
+│ Mohon kembalikan tepat waktu ya.   │
+│                                     │
+│ 📎 Bawa nota QR Anda               │
+└────────────────────────────────────┘
+```
+
+### 🔴 Hari Jatuh Tempo (25 Sep 2026, 08:00)
+
+```
+Cron cek: ada yang due_date = hari ini?
+→ Kirim WA kedua:
+
+"⏰ HARI INI jatuh tempo buku Laskar Pelangi.
+Mohon dikembalikan hari ini sebelum perpus tutup."
+```
+
+### ⚠️ Lewat Jatuh Tempo (26 Sep 2026, 08:00)
+
+```
+Cron cek: ada yang due_date < hari ini & belum kembali?
+→ Update status: borrowed → OVERDUE
+→ Kirim WA:
+
+"🔴 Buku Laskar Pelangi TERLAMBAT 1 hari.
+Denda: Rp 1.000/hari.
+Total saat ini: Rp 1.000.
+Mohon segera kembalikan."
+```
+
+WA ini **berulang setiap hari** sampai buku dikembalikan (dengan dedup key agar tidak spam).
+
+---
+
+## 🔄 STEP 10 — Siswa Kembalikan Buku
+
+Beberapa hari kemudian, Ahmad datang bawa:
+- 📚 Buku Laskar Pelangi
+- 🎫 Nota QR (atau sebutkan kode)
+
+### Admin buka mode **Pengembalian**:
+
+```
+┌──────────────────────────────────────────────┐
+│  📚 PENGEMBALIAN BUKU                        │
+│  ──────────────────────────────────────────  │
+│                                              │
+│  ┌────────────────────────────────────┐     │
+│  │ 📷 Scan QR nota / barcode buku...   │     │
+│  │ ▌                                   │     │
+│  └────────────────────────────────────┘     │
+│                                              │
+└──────────────────────────────────────────────┘
+```
+
+### Admin scan QR di nota → sistem cek:
+
+```
+┌──────────────────────────────────────────────┐
+│  ✅ DATA PEMINJAMAN DITEMUKAN                │
+│  ──────────────────────────────────────────  │
+│                                              │
+│  👤 Ahmad Fauzi (XI IPA 2)                  │
+│  📖 Laskar Pelangi                          │
+│  🏷️ Kode: LN-20260918-ABC123               │
+│                                              │
+│  📅 Pinjam: 18 Sep 2026                     │
+│  📅 Due: 25 Sep 2026                        │
+│  📅 Hari ini: 23 Sep 2026                   │
+│                                              │
+│  ✅ TEPAT WAKTU (2 hari lebih awal)         │
+│  💰 Denda: Rp 0                             │
+│                                              │
+│  Kondisi buku:                              │
+│  ○ Baik  ○ Rusak ringan  ○ Rusak berat     │
+│                                              │
+│  [✓ Konfirmasi Pengembalian]                │
+└──────────────────────────────────────────────┘
+```
+
+### Admin klik Konfirmasi → sistem:
+
+```
+1. Update loan: status = RETURNED, return_date = today
+2. Stok buku bertambah: 2 → 3
+3. Counter user berkurang
+4. Insert loan_log: action = 'returned'
+5. Cancel semua notifikasi reminder yang pending
+6. Bunyi beep sukses
+7. (Opsional) Cetak struk pengembalian
 ```
 
 ---
 
-## 8️⃣ Checklist Optimasi Scanner EZCode
+## 🧾 STEP 11 — Nota Pengembalian (Opsional)
 
-| # | Item | Wajib? |
-|---|------|--------|
-| 1 | Auto-focus input field | ✅ Wajib |
-| 2 | Auto-submit on Enter | ✅ Wajib |
-| 3 | Validasi format ISBN-13 + checksum | ✅ Wajib |
-| 4 | Deteksi tipe (buku/anggota/loan) | ✅ Wajib |
-| 5 | Cooldown anti-double-scan (2 detik) | ✅ Wajib |
-| 6 | Backend `Cache::lock` | ✅ Wajib |
-| 7 | Rate limiting | ✅ Wajib |
-| 8 | Log semua scan ke `scan_logs` | 🟡 Recommended |
-| 9 | Feedback suara (beep) | 🟡 Recommended |
-| 10 | Feedback visual (banner) | ✅ Wajib |
-| 11 | Multiple mode (borrow/return/check) | ✅ Wajib |
-| 12 | Konfigurasi suffix Enter di scanner | ✅ Wajib |
+Kalau perlu bukti, printer cetak struk kedua:
+
+```
+================================
+   📚 PERPUSTAKAAN DIGITAL
+================================
+   BUKTI PENGEMBALIAN
+================================
+
+No. Pinjam: LN-20260918-ABC123
+Tanggal   : 23 Sep 2026, 14:15
+
+--------------------------------
+PEMINJAM
+--------------------------------
+Nama  : Ahmad Fauzi
+Kelas : XI IPA 2
+NIS   : 20240001
+
+--------------------------------
+BUKU
+--------------------------------
+Judul : Laskar Pelangi
+ISBN  : 9786233100267
+
+--------------------------------
+STATUS
+--------------------------------
+Pinjam     : 18 Sep 2026
+Dikembalikan: 23 Sep 2026
+Durasi     : 5 hari (tepat waktu)
+
+Denda      : Rp 0
+
+--------------------------------
+Terima kasih sudah mengembalikan
+tepat waktu! 🌟
+================================
+```
 
 ---
 
-## 🎯 TL;DR untuk Scanner EZCode Anda
+## 📊 RINGKASAN ALUR
 
-**Jawaban singkat:** 
+```
+┌──────────────────────────────────────────────┐
+│  SISWA DATANG KE PERPUSTAKAAN                │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  1. Admin scan kartu siswa                   │
+│     → Sistem verifikasi (aktif, kuota OK)    │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  2. Admin scan barcode buku                  │
+│     → Sistem cek stok + duplikasi            │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  3. Admin set due date + konfirmasi          │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  4. SISTEM OTOMATIS:                         │
+│     ✓ Simpan ke database                     │
+│     ✓ Kurangi stok                           │
+│     ✓ Generate QR                            │
+│     ✓ Cetak nota (printer)                   │
+│     ✓ Kirim WA ke siswa                      │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  5. Nota QR diserahkan ke siswa              │
+│     Buku diserahkan ke siswa                 │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  6. CRON HARIAN OTOMATIS:                    │
+│     • H-1 → WA reminder                      │
+│     • Hari H → WA jatuh tempo                │
+│     • H+1+ → WA overdue + denda              │
+└──────────────────┬───────────────────────────┘
+                   ▼
+┌──────────────────────────────────────────────┐
+│  7. Siswa kembali → scan nota QR             │
+│     → Update status + kembalikan stok        │
+│     → Cancel reminder yang pending           │
+└──────────────────────────────────────────────┘
+```
 
-Scanner EZCode USB Anda **langsung bisa dipakai** — tidak perlu driver. Tapi untuk **sistem perpustakaan yang andal**, perlu:
+---
 
-1. ✅ **Auto-focus + auto-submit** di halaman scan
-2. ✅ **Validasi ISBN-13** (barcode `9786233100267` adalah ISBN valid)
-3. ✅ **Deteksi tipe barcode** (buku vs anggota vs loan)
-4. ✅ **Anti double-scan** (cooldown 2 detik + backend lock)
-5. ✅ **Log semua scan** untuk audit
-6. ✅ **Feedback** suara + visual
-7. ✅ **Cek setting suffix** scanner (harus kirim Enter)
+## 💡 POIN PENTING Skenario Ini
 
-**Yang tidak perlu dioptimasi:** driver/sistem operasi — USB HID sudah plug-and-play.
+| Aspek | Detail |
+|-------|--------|
+| **Trigger** | Admin scan manual (bukan self-service) |
+| **Kecepatan** | ~30 detik per siswa |
+| **Output** | Nota QR tercetak + tersimpan di DB |
+| **Reminder** | Otomatis via WA (H-1, H, H+1, dst) |
+| **Bukti fisik** | Nota QR dipegang siswa |
+| **Pengembalian** | Scan QR dari nota |
+| **Anti-bug** | Idempotency + lock + state machine |
+
+---
+
+## 🎯 KEUNGGULAN SKENARIO INI
+
+1. ✅ **Cepat** — 30 detik per siswa, tidak perlu user login dulu
+2. ✅ **Simpel** — siswa tidak perlu paham web
+3. ✅ **Bukti fisik** — nota QR jadi pegangan siswa
+4. ✅ **Otomatis** — reminder WA mengurangi beban admin
+5. ✅ **Akuntabel** — semua tercatat di database
+6. ✅ **Anti-bug** — kalau scan 2x, sistem tetap aman
+
+---
+
+## 🛠️ YANG PERLU DISIAPKAN
+
+### Hardware:
+| Item | Fungsi |
+|------|--------|
+| 💻 1 Komputer/Laptop | Admin station |
+| 📷 Scanner EZCode (USB) | Scan barcode + QR |
+| 🖨️ Printer thermal 80mm | Cetak nota |
+| 🖨️ Printer label (opsional) | Cetak QR sticker untuk buku |
+
+### Software:
+| Item | Fungsi |
+|------|--------|
+| Laravel 11 | Backend |
+| MySQL | Database |
+| WA Gateway (Fonnte/Wablas) | Kirim reminder |
+| simple-qrcode | Generate QR |
+| dompdf | Kalau ada cetak PDF |
+| Cron / Task Scheduler | Reminder otomatis |
+
+### Konfigurasi:
+```env
+# .env
+LIBRARY_DEFAULT_LOAN_DAYS=7
+LIBRARY_MAX_ACTIVE_LOANS=3
+LIBRARY_FINE_PER_DAY=1000
+FONNTE_TOKEN=xxxxx
+PRINTER_NAME=Thermal_80mm
+```
+
+---
+
+## 🔔 JADWAL REMINDER OTOMATIS
+
+| Kapan | Trigger | WA yang dikirim |
+|-------|---------|-----------------|
+| H-1 (jam 08:00) | `due_date = besok` | "Pengingat, besok jatuh tempo" |
+| H (jam 08:00) | `due_date = hari ini` | "Hari ini jatuh tempo!" |
+| H+1 (jam 08:00) | `due_date < hari ini` | "Terlambat 1 hari, denda Rp X" |
+| H+2 dst | Setiap hari sampai kembali | Update total denda |
+| Setelah kembali | Return dikonfirmasi | "Terima kasih!" |
+
+---
+
+## ❓ FAQ Skenario Ini
+
+**Q: Kalau siswa lupa bawa nota QR saat mengembalikan?**
+A: Admin bisa cari manual berdasarkan nama/NIS di menu pengembalian.
+
+**Q: Kalau siswa hilang nota QR?**
+A: Admin bisa regenerate dari menu **Kartu QR → Regenerate**. Kode lama tetap valid.
+
+**Q: Kalau printer thermal mati?**
+A: Sistem tetap simpan ke DB. Nota bisa dicetak ulang dari menu **Kartu QR**.
+
+**Q: Kalau 2 admin scan buku yang sama bersamaan?**
+A: Sistem pakai `Cache::lock` — yang kedua dapat pesan "sedang diproses".
+
+**Q: Kalau siswa pinjam 2 buku sekaligus?**
+A: Ulangi proses scan untuk buku kedua. Bisa gabung dalam 1 nota (opsional).
+
+**Q: Kalau WA siswa tidak aktif?**
+A: Sistem log pengiriman gagal. Admin bisa kirim manual atau hubungi orang tua.
 
 ---
 
 Mau saya lanjutkan ke:
-- 📝 **Kode lengkap `ScanController` + `BarcodeService`** siap pakai
-- 🎨 **Halaman Blade scanner** lengkap dengan UI + JavaScript
-- 🗄️ **Migration `scan_logs`** + integrasi ke sistem yang sudah ada
-- 🖨️ **Integrasi printer thermal** untuk cetak kartu QR otomatis setelah scan
-
-Pilih yang mana?
+- 📝 **Kode `ScanController` + `LoanService`** untuk skenario ini
+- 🎨 **Halaman Blade scan on-site** lengkap dengan JavaScript
+- 🖨️ **Template nota thermal** (HTML/CSS untuk printer 80mm)
+- 🔔 **Cron job reminder WA** lengkap dengan dedup

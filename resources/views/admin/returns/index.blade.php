@@ -26,13 +26,13 @@
         <h2>Riwayat Pengembalian Terakhir</h2>
     </div>
 
-    <table>
+    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
-                <th>Kode Pinjam</th>
+                <th style="width: 170px;">Kode Pinjam</th>
                 <th>Buku & Peminjam</th>
-                <th>Tgl Pinjam / Kembali</th>
-                <th>Status</th>
+                <th style="width: 200px;">Tgl Pinjam / Kembali</th>
+                <th style="width: 140px; text-align: center;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -40,20 +40,23 @@
                 <tr>
                     <td><code>{{ $loan->kode_pinjam }}</code></td>
                     <td>
-                        <strong style="color: #222;">{{ $loan->book->judul ?? '-' }}</strong>
-                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Peminjam: {{ $loan->user->nama ?? '-' }}</span>
+                        <strong style="color: #0f172a;">{{ $loan->book->judul ?? '-' }}</strong>
+                        <span style="display: block; font-size: 0.75rem; color: #64748b;">Peminjam: {{ $loan->user->nama ?? '-' }}</span>
                     </td>
                     <td>
                         {{ $loan->tanggal_pinjam ? $loan->tanggal_pinjam->format('d M Y') : '-' }}
-                        <span style="display: block; font-size: 0.75rem; color: #00a65a;">Kembali: {{ $loan->tanggal_kembali ? $loan->tanggal_kembali->format('d M Y') : '-' }}</span>
+                        <span style="display: block; font-size: 0.75rem; color: #16a34a; font-weight: 600;">Kembali: {{ $loan->tanggal_kembali ? $loan->tanggal_kembali->format('d M Y') : '-' }}</span>
                     </td>
-                    <td>
-                        <span class="status {{ $loan->status }}">{{ ucfirst($loan->status) }}</span>
+                    <td style="text-align: center;">
+                        @php
+                            $statusVal = is_object($loan->status) ? $loan->status->value : $loan->status;
+                        @endphp
+                        <span class="status {{ $statusVal }}">{{ ucfirst($statusVal) }}</span>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #68777d; padding: 24px;">Belum ada riwayat pengembalian.</td>
+                    <td colspan="4" style="text-align: center; color: #64748b; padding: 28px;">Belum ada riwayat pengembalian.</td>
                 </tr>
             @endforelse
         </tbody>
