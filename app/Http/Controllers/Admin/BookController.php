@@ -25,7 +25,6 @@ class BookController extends Controller
                 'found' => true,
                 'source' => 'local',
                 'title' => $existing->judul,
-                'author' => $existing->penulis,
                 'kategori_id' => $existing->kategori_id,
                 'stock' => $existing->stok,
                 'message' => 'Buku sudah ada di database lokal.'
@@ -42,14 +41,12 @@ class BookController extends Controller
                 if (isset($data[$key])) {
                     $bookData = $data[$key];
                     $title = $bookData['title'] ?? '';
-                    $authors = isset($bookData['authors']) ? implode(', ', array_column($bookData['authors'], 'name')) : '';
 
                     if ($title) {
                         return response()->json([
                             'found' => true,
                             'source' => 'openlibrary',
                             'title' => $title,
-                            'author' => $authors,
                             'message' => 'Detail buku ditemukan dari OpenLibrary.'
                         ]);
                     }
@@ -69,7 +66,6 @@ class BookController extends Controller
                         'found' => true,
                         'source' => 'googlebooks',
                         'title' => $info['title'] ?? '',
-                        'author' => isset($info['authors']) ? implode(', ', $info['authors']) : '',
                         'message' => 'Detail buku ditemukan dari Google Books.'
                     ]);
                 }
@@ -86,7 +82,6 @@ class BookController extends Controller
         if ($request->filled('search')) {
             $search = $request->string('search');
             $query->where('judul', 'like', "%{$search}%")
-                  ->orWhere('penulis', 'like', "%{$search}%")
                   ->orWhere('isbn', 'like', "%{$search}%");
         }
 
@@ -104,11 +99,12 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'kategori_id' => ['nullable', 'exists:tb_kategori,id'],
+            'kategori_id' => ['required', 'exists:tb_kategori,id'],
             'judul' => ['required', 'string', 'max:200'],
-            'penulis' => ['required', 'string', 'max:150'],
             'isbn' => ['nullable', 'string', 'max:20', 'unique:tb_data_buku,isbn'],
             'stok' => ['required', 'integer', 'min:1'],
+        ], [
+            'kategori_id.required' => 'Kategori wajib dipilih sebelum menyimpan buku.',
         ]);
 
         $data['tersedia'] = $data['stok'];
@@ -127,11 +123,12 @@ class BookController extends Controller
     public function update(Request $request, Book $book)
     {
         $data = $request->validate([
-            'kategori_id' => ['nullable', 'exists:tb_kategori,id'],
+            'kategori_id' => ['required', 'exists:tb_kategori,id'],
             'judul' => ['required', 'string', 'max:200'],
-            'penulis' => ['required', 'string', 'max:150'],
             'isbn' => ['nullable', 'string', 'max:20', 'unique:tb_data_buku,isbn,'.$book->id],
             'stok' => ['required', 'integer', 'min:0'],
+        ], [
+            'kategori_id.required' => 'Kategori wajib dipilih.',
         ]);
 
         $diff = $data['stok'] - $book->stok;

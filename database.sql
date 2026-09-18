@@ -43,13 +43,12 @@ CREATE TABLE tb_kategori (
 -- ============ TB_DATA_BUKU ============
 CREATE TABLE tb_data_buku (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    kategori_id BIGINT UNSIGNED NULL,
+    kategori_id BIGINT UNSIGNED NOT NULL,
     judul VARCHAR(200) NOT NULL,
-    penulis VARCHAR(150) NOT NULL,
     isbn VARCHAR(20) UNIQUE NULL,
     stok INT UNSIGNED DEFAULT 1,           -- total stok
     tersedia INT UNSIGNED DEFAULT 1,       -- tersedia saat ini
-    FOREIGN KEY (kategori_id) REFERENCES tb_kategori(id) ON DELETE SET NULL,
+    FOREIGN KEY (kategori_id) REFERENCES tb_kategori(id) ON DELETE RESTRICT,
     INDEX idx_judul (judul),
     INDEX idx_tersedia (tersedia)
 ) ENGINE=InnoDB;

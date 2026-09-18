@@ -18,12 +18,6 @@
             @error('judul') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 
-        <div style="margin-bottom: 14px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Penulis</label>
-            <input type="text" name="penulis" value="{{ old('penulis', $book->penulis) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            @error('penulis') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
-        </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div>
                 <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">ISBN</label>
@@ -37,17 +31,18 @@
             </div>
         </div>
 
-        @if(isset($categories) && count($categories) > 0)
         <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Kategori Buku</label>
-            <select name="kategori_id" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Kategori Buku <span style="color:#dd4b39;">*</span></label>
+            <select name="kategori_id" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
                 <option value="">-- Pilih Kategori --</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ old('kategori_id', $book->kategori_id) == $cat->id ? 'selected' : '' }}>{{ $cat->kategori }}</option>
-                @endforeach
+                @if(isset($categories))
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ old('kategori_id', $book->kategori_id) == $cat->id ? 'selected' : '' }}>{{ $cat->kategori }}</option>
+                    @endforeach
+                @endif
             </select>
+            @error('kategori_id') <span style="color: #dd4b39; font-size: 0.75rem; display: block; margin-top: 4px;">{{ $message }}</span> @enderror
         </div>
-        @endif
 
         <div style="display: flex; gap: 10px;">
             <button type="submit" class="btn btn-primary">Perbarui Buku</button>

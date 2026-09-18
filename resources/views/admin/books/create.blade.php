@@ -35,23 +35,18 @@
             @error('judul') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 
-        <div style="margin-bottom: 14px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Penulis <span style="color:#dd4b39;">*</span></label>
-            <input type="text" id="penulis_input" name="penulis" value="{{ old('penulis') }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            @error('penulis') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
-        </div>
-
-        @if(isset($categories) && count($categories) > 0)
         <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Kategori Buku</label>
-            <select name="kategori_id" id="kategori_select" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Kategori Buku <span style="color:#dd4b39;">*</span></label>
+            <select name="kategori_id" id="kategori_select" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
                 <option value="">-- Pilih Kategori --</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ old('kategori_id') == $cat->id ? 'selected' : '' }}>{{ $cat->kategori }}</option>
-                @endforeach
+                @if(isset($categories))
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ old('kategori_id') == $cat->id ? 'selected' : '' }}>{{ $cat->kategori }}</option>
+                    @endforeach
+                @endif
             </select>
+            @error('kategori_id') <span style="color: #dd4b39; font-size: 0.75rem; display: block; margin-top: 4px;">{{ $message }}</span> @enderror
         </div>
-        @endif
 
         <div style="display: flex; gap: 10px;">
             <button type="submit" class="btn btn-primary">Simpan Buku</button>
@@ -79,7 +74,6 @@ function playAudioBeep(success = true) {
 
 const isbnInput = document.getElementById('isbn_input');
 const judulInput = document.getElementById('judul_input');
-const penulisInput = document.getElementById('penulis_input');
 const statusDiv = document.getElementById('isbn_lookup_status');
 
 // Focus on page load
@@ -118,12 +112,9 @@ async function performIsbnLookup() {
             statusDiv.style.color = '#00a65a';
             statusDiv.innerText = '✓ ' + data.message;
             if (data.title) judulInput.value = data.title;
-            if (data.author) penulisInput.value = data.author;
             
             if (!judulInput.value) {
                 judulInput.focus();
-            } else if (!penulisInput.value) {
-                penulisInput.focus();
             } else {
                 document.getElementById('createBookForm').querySelector('button[type="submit"]').focus();
             }

@@ -13,33 +13,37 @@
         <h2>Daftar Kategori Buku</h2>
     </div>
 
-    <table>
+    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
-                <th style="width: 80px;">No</th>
+                <th style="width: 70px; text-align: center;">No</th>
                 <th>Nama Kategori</th>
-                <th style="width: 160px;">Total Koleksi Buku</th>
-                <th style="width: 150px;">Aksi</th>
+                <th style="width: 180px; text-align: center;">Total Koleksi Buku</th>
+                <th style="width: 140px; text-align: center;">Aksi</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($categories as $index => $cat)
                 <tr>
-                    <td>{{ $categories->firstItem() + $index }}</td>
-                    <td><strong style="color: #222;">{{ $cat->kategori }}</strong></td>
-                    <td><span class="status borrowed">{{ $cat->total_buku }} Buku</span></td>
-                    <td>
-                        <button type="button" onclick="openEditModal({{ $cat->id }}, '{{ addslashes($cat->kategori) }}')" class="btn btn-secondary" style="font-size: 0.75rem;">Edit</button>
-                        <form method="POST" action="{{ route('admin.categories.destroy', $cat->id) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-secondary" style="font-size: 0.75rem; color: #dd4b39;">Hapus</button>
-                        </form>
+                    <td style="text-align: center; color: #64748b; font-weight: 500;">{{ $categories->firstItem() + $index }}</td>
+                    <td><strong style="color: #0f172a; font-size: 0.9rem;">{{ $cat->kategori }}</strong></td>
+                    <td style="text-align: center;">
+                        <span style="display: inline-block; padding: 4px 10px; background: #e0f2fe; color: #0369a1; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">{{ $cat->total_buku }} Buku</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                            <button type="button" onclick="openEditModal({{ $cat->id }}, '{{ addslashes($cat->kategori) }}')" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;">Edit</button>
+                            <form method="POST" action="{{ route('admin.categories.destroy', $cat->id) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #dc2626; border-color: #fecaca; background: #fff5f5;">Hapus</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #68777d; padding: 24px;">Belum ada data kategori. Klik "+ Tambah Kategori" untuk membuat.</td>
+                    <td colspan="4" style="text-align: center; color: #64748b; padding: 28px;">Belum ada data kategori. Klik "+ Tambah Kategori" untuk membuat.</td>
                 </tr>
             @endforelse
         </tbody>

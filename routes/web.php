@@ -41,9 +41,6 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::post('/returns/scan', [ReturnController::class, 'scan'])->name('returns.scan');
 
         Route::get('/qrcode', [QrCodeController::class, 'index'])->name('qrcode.index');
-        Route::get('/qrcode/scanner', [QrCodeController::class, 'scanner'])->name('qrcode.scanner');
-        Route::post('/qrcode/scanner/process', [QrCodeController::class, 'processScan'])->name('qrcode.scanner.process');
-        Route::post('/qrcode/scanner/quick-loan', [QrCodeController::class, 'quickLoan'])->name('qrcode.scanner.quick_loan');
 
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/settings', [NotificationController::class, 'settings'])->name('notifications.settings');

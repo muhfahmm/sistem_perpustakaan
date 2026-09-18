@@ -12,7 +12,7 @@
     <div class="panel-heading">
         <h2>Daftar Koleksi Buku</h2>
         <form method="GET" action="{{ route('admin.books.index') }}" style="display: flex; gap: 8px;">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, penulis, ISBN..." style="padding: 6px 10px; font-size: 0.8rem; border: 1px solid #d2d6de; border-radius: 3px;">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, ISBN..." style="padding: 6px 10px; font-size: 0.8rem; border: 1px solid #d2d6de; border-radius: 3px;">
             <button type="submit" class="btn btn-secondary">Cari</button>
         </form>
     </div>
@@ -20,7 +20,7 @@
     <table>
         <thead>
             <tr>
-                <th>Judul & Penulis</th>
+                <th>Judul Buku</th>
                 <th>ISBN</th>
                 <th>Stok / Tersedia</th>
                 <th>Aksi</th>
@@ -31,7 +31,6 @@
                 <tr>
                     <td>
                         <strong style="color: #222;">{{ $book->judul }}</strong>
-                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Penulis: {{ $book->penulis }}</span>
                     </td>
                     <td><code>{{ $book->isbn ?? '-' }}</code></td>
                     <td>{{ $book->tersedia }} / {{ $book->stok }} unit</td>

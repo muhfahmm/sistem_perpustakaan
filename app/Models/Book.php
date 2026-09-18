@@ -11,7 +11,7 @@ class Book extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'kategori_id', 'judul', 'penulis', 'isbn', 'stok', 'tersedia',
+        'kategori_id', 'judul', 'isbn', 'stok', 'tersedia',
     ];
 
     protected function casts(): array
