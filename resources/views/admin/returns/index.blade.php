@@ -38,14 +38,14 @@
         <tbody>
             @forelse ($returnedLoans as $loan)
                 <tr>
-                    <td><code>{{ $loan->loan_code }}</code></td>
+                    <td><code>{{ $loan->kode_pinjam }}</code></td>
                     <td>
-                        <strong style="color: #222;">{{ $loan->book->title ?? '-' }}</strong>
-                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Peminjam: {{ $loan->user->name ?? '-' }}</span>
+                        <strong style="color: #222;">{{ $loan->book->judul ?? '-' }}</strong>
+                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Peminjam: {{ $loan->user->nama ?? '-' }}</span>
                     </td>
                     <td>
-                        {{ date('d M Y', strtotime($loan->loan_date)) }}
-                        <span style="display: block; font-size: 0.75rem; color: #00a65a;">Kembali: {{ $loan->return_date ? date('d M Y', strtotime($loan->return_date)) : '-' }}</span>
+                        {{ $loan->tanggal_pinjam ? $loan->tanggal_pinjam->format('d M Y') : '-' }}
+                        <span style="display: block; font-size: 0.75rem; color: #00a65a;">Kembali: {{ $loan->tanggal_kembali ? $loan->tanggal_kembali->format('d M Y') : '-' }}</span>
                     </td>
                     <td>
                         <span class="status {{ $loan->status }}">{{ ucfirst($loan->status) }}</span>
@@ -66,6 +66,32 @@
 
 @push('scripts')
 <script>
+function playAudioBeep(success = true) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = success ? 880 : 330;
+        gain.gain.value = 0.2;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + (success ? 0.15 : 0.3));
+    } catch (e) {}
+}
+
+const returnInput = document.getElementById('loan_code_input');
+
+document.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+        if (returnInput) returnInput.focus();
+    }
+});
+window.addEventListener('load', () => {
+    if (returnInput) returnInput.focus();
+});
+
 async function processReturn(e) {
     e.preventDefault();
     const input = document.getElementById('loan_code_input');
@@ -91,15 +117,18 @@ async function processReturn(e) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            playAudioBeep(true);
             feedback.style.color = '#00a65a';
             feedback.innerText = '✓ ' + result.message;
             input.value = '';
-            setTimeout(() => location.reload(), 1500);
+            setTimeout(() => location.reload(), 1200);
         } else {
+            playAudioBeep(false);
             feedback.style.color = '#dd4b39';
             feedback.innerText = '✕ ' + (result.message || 'Gagal memproses pengembalian.');
         }
     } catch (err) {
+        playAudioBeep(false);
         feedback.style.color = '#dd4b39';
         feedback.innerText = '✕ Terjadi kesalahan koneksi.';
     }

@@ -7,45 +7,87 @@
     .stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
+        gap: 16px;
         margin-bottom: 24px;
     }
 
     .stat {
-        position: relative;
-        min-height: 110px;
-        padding: 16px;
-        color: #fff;
-        border-radius: 3px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 125px;
+        padding: 16px 18px 12px;
+        color: #ffffff;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1e88e5, #1565c0);
+        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
         overflow: hidden;
-        background: var(--blue-main);
     }
 
-    .stat:nth-child(2) { background: #f39c12; }
-    .stat:nth-child(3) { background: #00a65a; }
-    .stat:nth-child(4) { background: #dd4b39; }
+    .stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat:nth-child(1) { background: linear-gradient(135deg, #2b84ea, #1a65c6); }
+    .stat:nth-child(2) { background: linear-gradient(135deg, #f39c12, #d68100); }
+    .stat:nth-child(3) { background: linear-gradient(135deg, #00a65a, #008d4c); }
+    .stat:nth-child(4) { background: linear-gradient(135deg, #dd4b39, #c23321); }
+
+    .stat-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
 
     .stat-value {
-        margin: 0 0 4px;
-        font-size: 2rem;
-        font-weight: 700;
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    .stat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        font-size: 1.2rem;
+        backdrop-filter: blur(4px);
     }
 
     .stat-label {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        margin-bottom: 12px;
+        line-height: 1.3;
     }
 
     .stat-footer {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        padding: 4px 10px;
-        color: rgba(255, 255, 255, 0.85);
-        background: rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
         font-size: 0.72rem;
-        text-align: center;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+    }
+
+    .stat-footer-arrow {
+        font-size: 0.85rem;
+        transition: transform 0.2s;
+    }
+
+    .stat:hover .stat-footer-arrow {
+        transform: translateX(4px);
     }
 
     .content-grid {
@@ -123,26 +165,50 @@
 </header>
 
 <section class="stats" aria-label="Statistik perpustakaan">
-    <article class="stat">
-        <div class="stat-value">{{ number_format($stats['books']) }}</div>
+    <a href="{{ route('admin.books.index') }}" class="stat">
+        <div class="stat-header">
+            <div class="stat-value">{{ number_format($stats['books']) }}</div>
+            <div class="stat-icon">📚</div>
+        </div>
         <div class="stat-label">Total Koleksi Buku</div>
-        <div class="stat-footer">Data Perpustakaan</div>
-    </article>
-    <article class="stat">
-        <div class="stat-value">{{ number_format($stats['activeLoans']) }}</div>
+        <div class="stat-footer">
+            <span>Data Perpustakaan</span>
+            <span class="stat-footer-arrow">→</span>
+        </div>
+    </a>
+    <a href="{{ route('admin.loans.index') }}" class="stat">
+        <div class="stat-header">
+            <div class="stat-value">{{ number_format($stats['activeLoans']) }}</div>
+            <div class="stat-icon">📖</div>
+        </div>
         <div class="stat-label">Sedang Dipinjam</div>
-        <div class="stat-footer">Data Perpustakaan</div>
-    </article>
-    <article class="stat">
-        <div class="stat-value">{{ number_format($stats['activeMembers']) }}</div>
+        <div class="stat-footer">
+            <span>Data Perpustakaan</span>
+            <span class="stat-footer-arrow">→</span>
+        </div>
+    </a>
+    <a href="{{ route('admin.users.index') }}" class="stat">
+        <div class="stat-header">
+            <div class="stat-value">{{ number_format($stats['activeMembers']) }}</div>
+            <div class="stat-icon">👥</div>
+        </div>
         <div class="stat-label">Anggota Aktif</div>
-        <div class="stat-footer">Data Perpustakaan</div>
-    </article>
-    <article class="stat">
-        <div class="stat-value">{{ number_format($stats['overdueLoans']) }}</div>
+        <div class="stat-footer">
+            <span>Data Perpustakaan</span>
+            <span class="stat-footer-arrow">→</span>
+        </div>
+    </a>
+    <a href="{{ route('admin.loans.index') }}" class="stat">
+        <div class="stat-header">
+            <div class="stat-value">{{ number_format($stats['overdueLoans']) }}</div>
+            <div class="stat-icon">⚠️</div>
+        </div>
         <div class="stat-label">Terlambat Dikembalikan</div>
-        <div class="stat-footer">Data Perpustakaan</div>
-    </article>
+        <div class="stat-footer">
+            <span>Data Perpustakaan</span>
+            <span class="stat-footer-arrow">→</span>
+        </div>
+    </a>
 </section>
 
 <div class="content-grid">

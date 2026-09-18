@@ -31,14 +31,14 @@ class LoanService
                 throw new LoanException('Buku tidak ditemukan.');
             }
 
-            if ($book->available < 1) {
+            if ($book->tersedia < 1) {
                 throw new LoanException('Stok buku tidak tersedia.');
             }
 
             $activeStatuses = [LoanStatus::PENDING->value, LoanStatus::BORROWED->value, LoanStatus::OVERDUE->value];
             $hasActive = Loan::query()
                 ->where('user_id', $userId)
-                ->where('book_id', $bookId)
+                ->where('buku_id', $bookId)
                 ->whereIn('status', $activeStatuses)
                 ->lockForUpdate()
                 ->exists();
@@ -54,25 +54,23 @@ class LoanService
             }
 
             $loan = Loan::create([
-                'loan_code' => $this->generateLoanCode(),
+                'kode_pinjam' => $this->generateLoanCode(),
                 'idempotency_key' => $idempotencyKey,
                 'request_hash' => $requestHash,
                 'user_id' => $userId,
-                'book_id' => $bookId,
-                'loan_date' => now()->toDateString(),
-                'due_date' => now()->addDays((int) config('library.default_loan_days', 7))->toDateString(),
+                'buku_id' => $bookId,
+                'tanggal_pinjam' => now()->toDateString(),
+                'jatuh_tempo' => now()->addDays((int) config('library.default_loan_days', 7))->toDateString(),
                 'status' => LoanStatus::PENDING,
             ]);
 
-            // Pending loan reserves one copy; approval must not decrement it again.
-            $book->decrement('available');
-            $loan->user()->increment('active_loans_count');
+            $book->decrement('tersedia');
 
             LoanLog::create([
-                'loan_id' => $loan->id,
-                'action' => 'requested',
-                'actor_id' => $userId,
-                'description' => 'Pengajuan dibuat dan satu stok dicadangkan.',
+                'pinjaman_id' => $loan->id,
+                'aksi' => 'requested',
+                'aktor_id' => $userId,
+                'keterangan' => 'Pengajuan dibuat dan satu stok dicadangkan.',
             ]);
 
             return $loan;
@@ -87,15 +85,15 @@ class LoanService
 
             $fresh->update([
                 'status' => LoanStatus::BORROWED,
-                'approved_by' => $adminId,
-                'due_date' => $dueDate,
+                'disetujui_oleh' => $adminId,
+                'jatuh_tempo' => $dueDate,
             ]);
 
             LoanLog::create([
-                'loan_id' => $fresh->id,
-                'action' => 'approved',
-                'actor_id' => $adminId,
-                'description' => "Disetujui, jatuh tempo {$dueDate}.",
+                'pinjaman_id' => $fresh->id,
+                'aksi' => 'approved',
+                'aktor_id' => $adminId,
+                'keterangan' => "Disetujui, jatuh tempo {$dueDate}.",
             ]);
 
             return $fresh->fresh();
@@ -107,17 +105,16 @@ class LoanService
         return DB::transaction(function () use ($loan, $adminId, $notes) {
             $fresh = Loan::query()->whereKey($loan->id)->lockForUpdate()->firstOrFail();
             $this->ensureTransition($fresh, LoanStatus::REJECTED);
-            $book = Book::query()->whereKey($fresh->book_id)->lockForUpdate()->firstOrFail();
+            $book = Book::query()->whereKey($fresh->buku_id)->lockForUpdate()->firstOrFail();
 
-            $fresh->update(['status' => LoanStatus::REJECTED, 'notes' => $notes]);
-            $book->increment('available');
-            $fresh->user()->decrement('active_loans_count');
+            $fresh->update(['status' => LoanStatus::REJECTED, 'catatan' => $notes]);
+            $book->increment('tersedia');
 
             LoanLog::create([
-                'loan_id' => $fresh->id,
-                'action' => 'rejected',
-                'actor_id' => $adminId,
-                'description' => $notes ?? 'Pengajuan ditolak.',
+                'pinjaman_id' => $fresh->id,
+                'aksi' => 'rejected',
+                'aktor_id' => $adminId,
+                'keterangan' => $notes ?? 'Pengajuan ditolak.',
             ]);
 
             return $fresh->fresh();
@@ -127,7 +124,7 @@ class LoanService
     public function returnBook(string $loanCode, int $actorId): array
     {
         return DB::transaction(function () use ($loanCode, $actorId) {
-            $loan = Loan::query()->where('loan_code', $loanCode)->lockForUpdate()->first();
+            $loan = Loan::query()->where('kode_pinjam', $loanCode)->lockForUpdate()->first();
             if (!$loan) {
                 throw new LoanException('Kode pinjaman tidak ditemukan.');
             }
@@ -137,16 +134,15 @@ class LoanService
             }
 
             $this->ensureTransition($loan, LoanStatus::RETURNED);
-            $book = Book::query()->whereKey($loan->book_id)->lockForUpdate()->firstOrFail();
-            $loan->update(['status' => LoanStatus::RETURNED, 'return_date' => now()->toDateString()]);
-            $book->increment('available');
-            $loan->user()->decrement('active_loans_count');
+            $book = Book::query()->whereKey($loan->buku_id)->lockForUpdate()->firstOrFail();
+            $loan->update(['status' => LoanStatus::RETURNED, 'tanggal_kembali' => now()->toDateString()]);
+            $book->increment('tersedia');
 
             LoanLog::create([
-                'loan_id' => $loan->id,
-                'action' => 'returned',
-                'actor_id' => $actorId,
-                'description' => 'Buku dikembalikan.',
+                'pinjaman_id' => $loan->id,
+                'aksi' => 'returned',
+                'aktor_id' => $actorId,
+                'keterangan' => 'Buku dikembalikan.',
             ]);
 
             return ['loan' => $loan->fresh(), 'duplicate' => false, 'message' => 'Buku berhasil dikembalikan.'];
@@ -165,7 +161,7 @@ class LoanService
     {
         do {
             $code = 'LN-'.now()->format('Ymd').'-'.strtoupper(Str::random(6));
-        } while (Loan::where('loan_code', $code)->exists());
+        } while (Loan::where('kode_pinjam', $code)->exists());
 
         return $code;
     }

@@ -27,6 +27,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
+        Route::get('/books/lookup-isbn', [BookController::class, 'lookupIsbn'])->name('books.lookup_isbn');
         Route::resource('books', BookController::class);
         Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);
 
@@ -39,6 +40,8 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
         Route::get('/qrcode', [QrCodeController::class, 'index'])->name('qrcode.index');
         Route::get('/qrcode/scanner', [QrCodeController::class, 'scanner'])->name('qrcode.scanner');
+        Route::post('/qrcode/scanner/process', [QrCodeController::class, 'processScan'])->name('qrcode.scanner.process');
+        Route::post('/qrcode/scanner/quick-loan', [QrCodeController::class, 'quickLoan'])->name('qrcode.scanner.quick_loan');
 
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/settings', [NotificationController::class, 'settings'])->name('notifications.settings');

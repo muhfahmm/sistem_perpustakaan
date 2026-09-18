@@ -18,12 +18,14 @@
 
         <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Judul Buku</label>
-            <input type="text" name="title" value="{{ old('title', $book->title) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            <input type="text" name="judul" value="{{ old('judul', $book->judul) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            @error('judul') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 
         <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Penulis</label>
-            <input type="text" name="author" value="{{ old('author', $book->author) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            <input type="text" name="penulis" value="{{ old('penulis', $book->penulis) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            @error('penulis') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
@@ -33,17 +35,26 @@
                     <input type="text" id="isbn_input" name="isbn" value="{{ old('isbn', $book->isbn) }}" style="flex: 1; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
                     <button type="button" onclick="startIsbnScanner()" class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.78rem;" title="Scan Barcode ISBN via Kamera HP / Webcam">📷 Scan</button>
                 </div>
+                @error('isbn') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
             </div>
             <div>
                 <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Stok Total</label>
-                <input type="number" name="stock" value="{{ old('stock', $book->stock) }}" min="0" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+                <input type="number" name="stok" value="{{ old('stok', $book->stok) }}" min="0" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+                @error('stok') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
             </div>
         </div>
 
+        @if(isset($categories) && count($categories) > 0)
         <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Deskripsi / Sinopsis</label>
-            <textarea name="description" rows="4" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">{{ old('description', $book->description) }}</textarea>
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Kategori Buku</label>
+            <select name="kategori_id" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+                <option value="">-- Pilih Kategori --</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" {{ old('kategori_id', $book->kategori_id) == $cat->id ? 'selected' : '' }}>{{ $cat->kategori }}</option>
+                @endforeach
+            </select>
         </div>
+        @endif
 
         <div style="display: flex; gap: 10px;">
             <button type="submit" class="btn btn-primary">Perbarui Buku</button>

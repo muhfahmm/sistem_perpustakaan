@@ -12,17 +12,17 @@ class DashboardController extends Controller
         $activeLoanStatuses = ['approved', 'borrowed', 'overdue'];
 
         $stats = [
-            'books' => DB::table('tb_books')->count(),
-            'activeLoans' => DB::table('tb_loans')->whereIn('status', $activeLoanStatuses)->count(),
-            'activeMembers' => DB::table('tb_user')->where('is_active', true)->count(),
-            'overdueLoans' => DB::table('tb_loans')->where('status', 'overdue')->count(),
+            'books' => DB::table('tb_data_buku')->count(),
+            'activeLoans' => DB::table('tb_pinjaman')->whereIn('status', $activeLoanStatuses)->count(),
+            'activeMembers' => DB::table('tb_user')->where('status_aktif', true)->count(),
+            'overdueLoans' => DB::table('tb_pinjaman')->where('status', 'overdue')->count(),
         ];
 
-        $recentLoans = DB::table('tb_loans')
-            ->join('tb_user', 'tb_user.id', '=', 'tb_loans.user_id')
-            ->join('tb_books', 'tb_books.id', '=', 'tb_loans.book_id')
-            ->select('tb_books.title', 'tb_user.name as borrower', 'tb_loans.loan_date', 'tb_loans.status')
-            ->latest('tb_loans.created_at')
+        $recentLoans = DB::table('tb_pinjaman')
+            ->join('tb_user', 'tb_user.id', '=', 'tb_pinjaman.user_id')
+            ->join('tb_data_buku', 'tb_data_buku.id', '=', 'tb_pinjaman.buku_id')
+            ->select('tb_data_buku.judul as title', 'tb_user.nama as borrower', 'tb_pinjaman.tanggal_pinjam as loan_date', 'tb_pinjaman.status')
+            ->orderByDesc('tb_pinjaman.id')
             ->limit(5)
             ->get();
 

@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoanLog extends Model
 {
-    protected $table = 'tb_loan_logs';
+    protected $table = 'tb_log_pinjaman';
     public $timestamps = false;
 
-    protected $fillable = ['loan_id', 'action', 'actor_id', 'description', 'created_at'];
+    protected $fillable = ['pinjaman_id', 'aksi', 'aktor_id', 'keterangan', 'waktu'];
 
     protected function casts(): array
     {
-        return ['created_at' => 'datetime'];
+        return ['waktu' => 'datetime'];
     }
 }

@@ -30,11 +30,11 @@
             @forelse ($books as $book)
                 <tr>
                     <td>
-                        <strong style="color: #222;">{{ $book->title }}</strong>
-                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Penulis: {{ $book->author }}</span>
+                        <strong style="color: #222;">{{ $book->judul }}</strong>
+                        <span style="display: block; font-size: 0.75rem; color: #68777d;">Penulis: {{ $book->penulis }}</span>
                     </td>
                     <td><code>{{ $book->isbn ?? '-' }}</code></td>
-                    <td>{{ $book->available }} / {{ $book->stock }} unit</td>
+                    <td>{{ $book->tersedia }} / {{ $book->stok }} unit</td>
                     <td>
                         <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-secondary" style="font-size: 0.75rem;">Edit</a>
                         <form method="POST" action="{{ route('admin.books.destroy', $book) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus buku ini?')">

@@ -8,36 +8,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Loan extends Model
 {
-    protected $table = 'tb_loans';
+    protected $table = 'tb_pinjaman';
+    public $timestamps = false;
 
     protected $fillable = [
-        'loan_code', 'idempotency_key', 'request_hash', 'user_id', 'book_id',
-        'approved_by', 'loan_date', 'due_date', 'return_date', 'status',
-        'qr_code_path', 'notes',
+        'kode_pinjam', 'idempotency_key', 'request_hash', 'user_id', 'buku_id',
+        'disetujui_oleh', 'tanggal_pinjam', 'jatuh_tempo', 'tanggal_kembali', 'status',
+        'qr_code_path', 'catatan',
     ];
 
     protected function casts(): array
     {
         return [
             'status' => LoanStatus::class,
-            'loan_date' => 'date',
-            'due_date' => 'date',
-            'return_date' => 'date',
+            'tanggal_pinjam' => 'date',
+            'jatuh_tempo' => 'date',
+            'tanggal_kembali' => 'date',
         ];
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function book(): BelongsTo
     {
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class, 'buku_id');
     }
 
     public function approver(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'approved_by');
+        return $this->belongsTo(Admin::class, 'disetujui_oleh');
     }
 }

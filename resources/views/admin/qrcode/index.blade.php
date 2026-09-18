@@ -15,7 +15,7 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
         @forelse ($books as $book)
             <div style="border: 1px solid #dfe4e8; border-radius: 4px; padding: 16px; text-align: center; background: #fafafa;">
-                <div style="margin-bottom: 10px; font-weight: 700; color: #222; font-size: 0.9rem; min-height: 40px;">{{ $book->title }}</div>
+                <div style="margin-bottom: 10px; font-weight: 700; color: #222; font-size: 0.9rem; min-height: 40px;">{{ $book->judul }}</div>
                 <div style="background: #fff; padding: 10px; border: 1px solid #eee; display: inline-block; margin-bottom: 10px;">
                     <!-- QR Code Placeholder / SVG -->
                     <svg width="100" height="100" viewBox="0 0 100 100" fill="none">

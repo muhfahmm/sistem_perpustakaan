@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Book extends Model
 {
-    protected $table = 'tb_books';
+    protected $table = 'tb_data_buku';
+    public $timestamps = false;
+
     protected $fillable = [
-        'category_id', 'title', 'author', 'isbn',
-        'cover', 'stock', 'available', 'description',
+        'kategori_id', 'judul', 'penulis', 'isbn', 'stok', 'tersedia',
     ];
 
     protected function casts(): array
     {
-        return ['stock' => 'integer', 'available' => 'integer'];
+        return ['stok' => 'integer', 'tersedia' => 'integer'];
     }
 
     public function loans(): HasMany
     {
-        return $this->hasMany(Loan::class);
+        return $this->hasMany(Loan::class, 'buku_id');
     }
 }

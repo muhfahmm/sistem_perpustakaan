@@ -98,13 +98,6 @@ class AdminLoginController extends Controller
 
     private function logActivity(?Admin $admin, string $action, Request $request, string $description): void
     {
-        AdminActivityLog::create([
-            'user_id' => $admin?->id,
-            'action' => $action,
-            'description' => $description,
-            'ip_address' => $request->ip(),
-            'user_agent' => substr((string) $request->userAgent(), 0, 255),
-            'url' => substr($request->fullUrl(), 0, 500),
-        ]);
+        // Activity log table has been deprecated
     }
 }

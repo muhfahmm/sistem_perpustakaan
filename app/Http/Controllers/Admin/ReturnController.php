@@ -37,7 +37,7 @@ class ReturnController extends Controller
                 'success' => true,
                 'duplicate' => $result['duplicate'],
                 'message' => $result['message'],
-                'loan_code' => $result['loan']->loan_code,
+                'loan_code' => $result['loan']->kode_pinjam,
             ]);
         } catch (LoanException $exception) {
             return response()->json(['success' => false, 'message' => $exception->getMessage()], 422);

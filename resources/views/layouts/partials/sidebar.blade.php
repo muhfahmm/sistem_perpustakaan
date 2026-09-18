@@ -41,8 +41,12 @@
             <span class="icon">✓</span> Pengembalian
         </a>
 
-        <a href="{{ route('admin.qrcode.index') }}" class="{{ request()->routeIs('admin.qrcode.*') ? 'active' : '' }}">
-            <span class="icon">▦</span> QR Code
+        <a href="{{ route('admin.qrcode.scanner') }}" class="{{ request()->routeIs('admin.qrcode.scanner') ? 'active' : '' }}">
+            <span class="icon">🔌</span> Fast Scanner
+        </a>
+
+        <a href="{{ route('admin.qrcode.index') }}" class="{{ request()->routeIs('admin.qrcode.index') ? 'active' : '' }}">
+            <span class="icon">▦</span> Cetak QR Code
         </a>
 
         <a href="{{ route('admin.notifications.index') }}" class="{{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
