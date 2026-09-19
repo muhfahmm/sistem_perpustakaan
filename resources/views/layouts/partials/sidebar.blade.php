@@ -53,14 +53,6 @@
 
         <div class="nav-label">Alat & Laporan</div>
 
-        <a href="{{ route('admin.qrcode.index') }}" class="{{ request()->routeIs('admin.qrcode.index') ? 'active' : '' }}">
-            <span class="icon">▦</span> Cetak QR Code
-        </a>
-
-        <a href="{{ route('admin.notifications.index') }}" class="{{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
-            <span class="icon">◌</span> Notifikasi WA
-        </a>
-
         <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
             <span class="icon">▥</span> Laporan Sirkulasi
         </a>
