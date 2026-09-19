@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Book;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -20,8 +21,9 @@ class UserController extends Controller
         }
 
         $users = $query->latest('id')->paginate(10);
+        $books = Book::where('tersedia', '>', 0)->orderBy('judul')->get();
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'books'));
     }
 
     public function create()
@@ -35,11 +37,8 @@ class UserController extends Controller
             'nama' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', 'unique:tb_user_peminjam,email'],
             'telepon' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6'],
             'status_aktif' => ['required', 'boolean'],
         ]);
-
-        $data['password'] = bcrypt($data['password']);
 
         User::create($data);
 
@@ -59,11 +58,6 @@ class UserController extends Controller
             'telepon' => ['required', 'string', 'max:20'],
             'status_aktif' => ['required', 'boolean'],
         ]);
-
-        if ($request->filled('password')) {
-            $request->validate(['password' => ['string', 'min:6']]);
-            $data['password'] = bcrypt($request->password);
-        }
 
         $user->update($data);
 

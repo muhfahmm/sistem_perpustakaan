@@ -37,10 +37,6 @@
 
         <div class="nav-label">Sirkulasi & Transaksi</div>
 
-        <a href="{{ route('admin.scan.index') }}" class="{{ request()->routeIs('admin.scan.*') ? 'active' : '' }}">
-            <span class="icon">⚡</span> Scan Peminjaman (On-Site)
-        </a>
-
         <a href="{{ route('admin.loans.index') }}" class="{{ request()->routeIs('admin.loans.*') ? 'active' : '' }}">
             <span class="icon">↔</span> Daftar Peminjaman
         </a>

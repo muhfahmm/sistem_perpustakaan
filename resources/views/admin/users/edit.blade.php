@@ -30,12 +30,6 @@
             @error('telepon') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 
-        <div style="margin-bottom: 14px;">
-            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Ubah Password (Kosongkan jika tidak ingin diubah)</label>
-            <input type="password" name="password" placeholder="Minimal 6 karakter" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            @error('password') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
-        </div>
-
         <div style="margin-bottom: 20px;">
             <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Status Keaktifan <span style="color:#dd4b39;">*</span></label>
             <select name="status_aktif" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">

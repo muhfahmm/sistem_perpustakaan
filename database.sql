@@ -27,7 +27,6 @@ CREATE TABLE tb_user_peminjam (
     nama VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     telepon VARCHAR(20) NOT NULL,          -- nomor WA (format 62xxx)
-    password VARCHAR(255) NOT NULL,
     status_aktif TINYINT(1) DEFAULT 1,
     email_verified_at TIMESTAMP NULL,
     remember_token VARCHAR(100) NULL,

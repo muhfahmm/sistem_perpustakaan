@@ -37,7 +37,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [AdminLoanController::class, 'reject'])->name('loans.reject');
 
-        Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+        Route::get('/scan', fn () => redirect()->route('admin.users.index'))->name('scan.index');
         Route::post('/scan/lookup-user', [ScanController::class, 'lookupUser'])->name('scan.lookup_user');
         Route::post('/scan/lookup-book', [ScanController::class, 'lookupBook'])->name('scan.lookup_book');
         Route::post('/scan/store-onsite', [ScanController::class, 'storeOnsite'])->name('scan.store_onsite');

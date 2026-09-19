@@ -22,11 +22,9 @@ class User extends Authenticatable
         'status_aktif',
         'email_verified_at',
         'remember_token',
-        'password',
     ];
 
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
@@ -35,7 +33,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'status_aktif' => 'boolean',
-            'password' => 'hashed',
         ];
     }
 
