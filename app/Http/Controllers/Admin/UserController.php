@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Book;
+use App\Models\Loan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -20,7 +22,9 @@ class UserController extends Controller
                   ->orWhere('telepon', 'like', "%{$search}%");
         }
 
-        $users = $query->latest('id')->paginate(10);
+        $users = $query->withCount(['loans as active_loans_count' => function ($q) {
+            $q->whereIn('status', ['pending', 'approved', 'borrowed', 'overdue']);
+        }])->latest('id')->paginate(10);
         $books = Book::where('tersedia', '>', 0)->orderBy('judul')->get();
 
         return view('admin.users.index', compact('users', 'books'));
@@ -39,6 +43,8 @@ class UserController extends Controller
             'telepon' => ['required', 'string', 'max:20'],
             'status_aktif' => ['required', 'boolean'],
         ]);
+
+        $data['telepon'] = '62' . preg_replace('/^(\+62|62|0)/', '', trim($data['telepon']));
 
         User::create($data);
 
@@ -59,6 +65,8 @@ class UserController extends Controller
             'status_aktif' => ['required', 'boolean'],
         ]);
 
+        $data['telepon'] = '62' . preg_replace('/^(\+62|62|0)/', '', trim($data['telepon']));
+
         $user->update($data);
 
         return redirect()->route('admin.users.index')->with('success', 'Data peminjam berhasil diperbarui.');
@@ -66,7 +74,28 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'Data peminjam berhasil dihapus.');
+        DB::transaction(function () use ($user) {
+            $activeLoans = Loan::where('user_id', $user->id)
+                ->whereIn('status', ['pending', 'borrowed', 'approved', 'overdue'])
+                ->get();
+
+            foreach ($activeLoans as $loan) {
+                Book::where('id', $loan->buku_id)->increment('tersedia');
+            }
+
+            $user->delete();
+        });
+
+        return redirect()->route('admin.users.index')->with('success', 'Data peminjam berhasil dihapus dan stok buku pinjaman dikembalikan.');
+    }
+
+    public function userLoans(User $user)
+    {
+        $loans = Loan::with(['book'])
+            ->where('user_id', $user->id)
+            ->latest('id')
+            ->paginate(10);
+
+        return view('admin.users.loans', compact('user', 'loans'));
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tb_admin', function (Blueprint $table) {
             $table->id();
             $table->string('username', 100)->unique();
+            $table->string('telepon', 20)->nullable();
             $table->string('email', 150)->nullable()->unique();
             $table->string('password');
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');

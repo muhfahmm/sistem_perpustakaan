@@ -23,11 +23,15 @@ class AdminRegisterController extends Controller
     {
         $data = $request->validate([
             'username' => ['required', 'string', 'max:100', 'unique:tb_admin,username'],
+            'telepon' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $telepon = '62' . preg_replace('/^(\+62|62|0)/', '', trim($data['telepon']));
+
         $admin = Admin::create([
             'username' => strtolower($data['username']),
+            'telepon' => $telepon,
             'password' => Hash::make($data['password']),
             'status' => 'active',
         ]);

@@ -16,7 +16,7 @@ class ReturnController extends Controller
     {
         $returnedLoans = Loan::with(['user', 'book'])
             ->whereIn('status', ['returned', 'overdue'])
-            ->latest()
+            ->latest('id')
             ->paginate(10);
 
         return view('admin.returns.index', compact('returnedLoans'));

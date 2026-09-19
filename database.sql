@@ -10,6 +10,7 @@ USE db_perpus;
 CREATE TABLE tb_admin (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
+    telepon VARCHAR(20) NULL,
     password VARCHAR(255) NOT NULL,
     status ENUM('active', 'suspended', 'banned') DEFAULT 'active',
     last_login_at TIMESTAMP NULL,
@@ -83,7 +84,6 @@ CREATE TABLE tb_pinjaman (
     status ENUM('pending','approved','rejected','borrowed','returned','overdue','lost')
         DEFAULT 'pending',
     qr_code_path VARCHAR(255) NULL,
-    catatan TEXT NULL,
 
     FOREIGN KEY (user_id) REFERENCES tb_user_peminjam(id) ON DELETE CASCADE,
     FOREIGN KEY (buku_id) REFERENCES tb_data_buku(id) ON DELETE RESTRICT,

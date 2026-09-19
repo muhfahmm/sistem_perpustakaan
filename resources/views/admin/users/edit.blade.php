@@ -26,7 +26,10 @@
 
         <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Nomor WhatsApp / Telepon <span style="color:#dd4b39;">*</span></label>
-            <input type="text" name="telepon" value="{{ old('telepon', $user->telepon) }}" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
+            <div style="display: flex; align-items: center;">
+                <span style="background: #f1f5f9; border: 1px solid #d2d6de; border-right: 0; padding: 8px 12px; border-radius: 3px 0 0 3px; font-size: 0.85rem; font-weight: 600; color: #475569;">+62</span>
+                <input type="text" name="telepon" value="{{ old('telepon', preg_replace('/^(\+62|62|0)/', '', $user->telepon)) }}" required placeholder="8123456789" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 0 3px 3px 0; font-size: 0.85rem;">
+            </div>
             @error('telepon') <span style="color: #dd4b39; font-size: 0.75rem;">{{ $message }}</span> @enderror
         </div>
 

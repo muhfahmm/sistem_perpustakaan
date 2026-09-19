@@ -55,4 +55,32 @@
         {{ $books->links() }}
     </div>
 </section>
+
+@if (session('cannot_delete_book'))
+<!-- MODAL PERINGATAN GAGAL HAPUS BUKU -->
+<div id="cannotDeleteBookModal" style="display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: #fff; width: 100%; max-width: 450px; border-radius: 8px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 16px;">
+            <span style="font-size: 1.8rem;">🚫</span>
+            <div>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Buku Tidak Dapat Dihapus!</h3>
+                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">Proteksi integritas riwayat transaksi perpustakaan.</p>
+            </div>
+        </div>
+
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
+            <div style="font-weight: 700; color: #991b1b; font-size: 0.95rem;">{{ session('cannot_delete_book')['title'] }}</div>
+            <div style="font-size: 0.8rem; color: #7f1d1d; margin-top: 4px;">ISBN: <code>{{ session('cannot_delete_book')['isbn'] }}</code></div>
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #fca5a5; font-size: 0.82rem; color: #991b1b; line-height: 1.4;">
+                {{ session('cannot_delete_book')['message'] }}
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <a href="{{ route('admin.loans.index') }}" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.85rem;">Cek Data Peminjaman</a>
+            <button type="button" onclick="document.getElementById('cannotDeleteBookModal').style.display='none'" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; background: #ef4444; border-color: #ef4444;">Paham & Tutup</button>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

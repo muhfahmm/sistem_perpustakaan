@@ -14,7 +14,7 @@ class Loan extends Model
     protected $fillable = [
         'kode_pinjam', 'idempotency_key', 'request_hash', 'user_id', 'buku_id',
         'disetujui_oleh', 'tanggal_pinjam', 'jatuh_tempo', 'tanggal_kembali', 'status',
-        'qr_code_path', 'catatan',
+        'qr_code_path',
     ];
 
     protected function casts(): array

@@ -115,7 +115,6 @@ class LoanService
                 'tanggal_pinjam' => now()->toDateString(),
                 'jatuh_tempo' => $dueDate,
                 'status' => LoanStatus::BORROWED,
-                'catatan' => $notes,
             ]);
 
             $book->decrement('tersedia');
@@ -161,7 +160,7 @@ class LoanService
             $this->ensureTransition($fresh, LoanStatus::REJECTED);
             $book = Book::query()->whereKey($fresh->buku_id)->lockForUpdate()->firstOrFail();
 
-            $fresh->update(['status' => LoanStatus::REJECTED, 'catatan' => $notes]);
+            $fresh->update(['status' => LoanStatus::REJECTED]);
             $book->increment('tersedia');
 
             LoanLog::create([

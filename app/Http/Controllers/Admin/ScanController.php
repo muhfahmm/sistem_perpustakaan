@@ -23,26 +23,62 @@ class ScanController extends Controller
     public function lookupUser(Request $request): JsonResponse
     {
         $code = trim($request->input('code', ''));
-        if (!$code) {
-            return response()->json(['success' => false, 'message' => 'Kode anggota/telepon/email tidak boleh kosong.'], 422);
+        $name = trim($request->input('name', ''));
+        $email = trim($request->input('email', ''));
+        $phone = trim($request->input('phone', ''));
+
+        if (!$code && !$email && !$phone) {
+            return response()->json(['success' => false, 'message' => 'Harap isi Nama, Email, atau No. WA peminjam.'], 422);
         }
 
         $cleanCode = preg_replace('/^AGT-/i', '', $code);
         $userQuery = User::query();
 
-        if (is_numeric($cleanCode)) {
+        $normalizedPhone = '62' . preg_replace('/^(\+62|62|0)/', '', $phone ?: $code);
+        if ($phone) {
+            $userQuery->where('telepon', $normalizedPhone);
+        } elseif ($email) {
+            $userQuery->where('email', $email);
+        } else if (is_numeric($cleanCode)) {
             $userQuery->where('id', $cleanCode)
                       ->orWhere('telepon', $code)
-                      ->orWhere('telepon', $cleanCode);
+                      ->orWhere('telepon', $cleanCode)
+                      ->orWhere('telepon', $normalizedPhone);
         } else {
             $userQuery->where('email', $code)
-                      ->orWhere('nama', 'like', "%{$code}%");
+                      ->orWhere('nama', 'like', "%{$code}%")
+                      ->orWhere('telepon', $normalizedPhone);
         }
 
         $user = $userQuery->first();
 
         if (!$user) {
-            return response()->json(['success' => false, 'message' => "Data siswa/anggota '{$code}' tidak ditemukan."], 404);
+            if ($name && $email && $phone) {
+                // Auto register new borrower when clicking "Tambah Data Peminjam"
+                $user = User::create([
+                    'nama' => $name,
+                    'email' => $email,
+                    'telepon' => $normalizedPhone,
+                    'status_aktif' => 1,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'created' => true,
+                    'message' => "Peminjam baru '{$user->nama}' berhasil ditambahkan ke tabel.",
+                    'user' => [
+                        'id' => $user->id,
+                        'nama' => $user->nama,
+                        'email' => $user->email,
+                        'telepon' => $user->telepon,
+                        'active_loans_count' => 0,
+                        'max_loans' => (int) config('library.max_active_loans', 3),
+                        'remaining_quota' => (int) config('library.max_active_loans', 3),
+                    ]
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => "Data siswa/anggota tidak ditemukan."], 404);
         }
 
         if (!$user->status_aktif) {
@@ -59,6 +95,7 @@ class ScanController extends Controller
 
         return response()->json([
             'success' => true,
+            'created' => false,
             'message' => "Siswa '{$user->nama}' terdeteksi.",
             'user' => [
                 'id' => $user->id,
@@ -110,21 +147,44 @@ class ScanController extends Controller
     public function storeOnsite(Request $request, LoanService $loanService): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'exists:tb_user_peminjam,id'],
+            'user_id' => ['nullable', 'exists:tb_user_peminjam,id'],
+            'user_name' => ['nullable', 'string', 'max:100'],
+            'user_email' => ['nullable', 'email', 'max:150'],
+            'user_phone' => ['nullable', 'string', 'max:20'],
             'book_id' => ['required', 'exists:tb_data_buku,id'],
             'due_date' => ['required', 'date', 'after_or_equal:today'],
-            'catatan' => ['nullable', 'string', 'max:255'],
         ]);
+
+        $userId = $validated['user_id'] ?? null;
+        if (!$userId) {
+            if (empty($validated['user_name']) || empty($validated['user_email']) || empty($validated['user_phone'])) {
+                return response()->json(['success' => false, 'message' => 'Harap lengkapi Nama, Email, dan No. WA peminjam.'], 422);
+            }
+
+            $user = User::where('email', $validated['user_email'])
+                ->orWhere('telepon', $validated['user_phone'])
+                ->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'nama' => $validated['user_name'],
+                    'email' => $validated['user_email'],
+                    'telepon' => $validated['user_phone'],
+                    'status_aktif' => 1,
+                ]);
+            }
+            $userId = $user->id;
+        }
 
         $adminId = (int) $request->user('admin')->id;
 
         try {
             $loan = $loanService->createOnsiteLoan(
-                (int) $validated['user_id'],
+                (int) $userId,
                 (int) $validated['book_id'],
                 $adminId,
                 $validated['due_date'],
-                $validated['catatan'] ?? null
+                null
             );
 
             $loan->load(['user', 'book']);
@@ -132,6 +192,13 @@ class ScanController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Peminjaman on-site berhasil diproses dan dicatat!',
+                'user' => [
+                    'id' => $loan->user->id,
+                    'nama' => $loan->user->nama ?? '-',
+                    'email' => $loan->user->email ?? '-',
+                    'telepon' => $loan->user->telepon ?? '-',
+                    'status_aktif' => $loan->user->status_aktif ?? 1,
+                ],
                 'loan' => [
                     'id' => $loan->id,
                     'kode_pinjam' => $loan->kode_pinjam,

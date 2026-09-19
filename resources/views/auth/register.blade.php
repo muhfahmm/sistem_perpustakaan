@@ -263,6 +263,16 @@
                 @error('username') <span class="error-message">{{ $message }}</span> @enderror
             </div>
 
+            <!-- NO. WHATSAPP -->
+            <div class="form-group">
+                <label for="telepon" class="form-label">No. WhatsApp / Telepon Admin</label>
+                <div class="input-wrapper" style="display: flex; align-items: center;">
+                    <span style="background: #f1f5f9; border: 1px solid #cbd5e1; border-right: 0; padding: 10px 14px; border-radius: 6px 0 0 6px; font-size: 0.9rem; font-weight: 600; color: #475569;">+62</span>
+                    <input id="telepon" type="text" name="telepon" class="form-input" value="{{ old('telepon') }}" placeholder="8123456789" required style="border-radius: 0 6px 6px 0;">
+                </div>
+                @error('telepon') <span class="error-message">{{ $message }}</span> @enderror
+            </div>
+
             <!-- PASSWORD -->
             <div class="form-group">
                 <label for="password" class="form-label">Password</label>

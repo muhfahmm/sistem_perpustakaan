@@ -32,10 +32,12 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::get('/books/lookup-isbn', [BookController::class, 'lookupIsbn'])->name('books.lookup_isbn');
         Route::resource('books', BookController::class);
         Route::resource('users', UserController::class);
+        Route::get('/users/{user}/loans', [UserController::class, 'userLoans'])->name('users.loans');
 
         Route::get('/loans', [AdminLoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [AdminLoanController::class, 'reject'])->name('loans.reject');
+        Route::delete('/loans/{loan}', [AdminLoanController::class, 'destroy'])->name('loans.destroy');
 
         Route::get('/scan', fn () => redirect()->route('admin.users.index'))->name('scan.index');
         Route::post('/scan/lookup-user', [ScanController::class, 'lookupUser'])->name('scan.lookup_user');

@@ -141,7 +141,24 @@ class BookController extends Controller
 
     public function destroy(Book $book)
     {
-        $book->delete();
-        return redirect()->route('admin.books.index')->with('success', 'Buku berhasil dihapus.');
+        $hasLoans = DB::table('tb_pinjaman')->where('buku_id', $book->id)->exists();
+        if ($hasLoans) {
+            return redirect()->route('admin.books.index')->with('cannot_delete_book', [
+                'title' => $book->judul,
+                'isbn' => $book->isbn ?? '-',
+                'message' => "Buku '{$book->judul}' tidak dapat dihapus karena saat ini sedang dipinjam atau memiliki riwayat transaksi peminjaman aktif."
+            ]);
+        }
+
+        try {
+            $book->delete();
+            return redirect()->route('admin.books.index')->with('success', 'Buku berhasil dihapus.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->route('admin.books.index')->with('cannot_delete_book', [
+                'title' => $book->judul,
+                'isbn' => $book->isbn ?? '-',
+                'message' => "Buku '{$book->judul}' tidak dapat dihapus karena masih terikat dengan data lain di sistem database."
+            ]);
+        }
     }
 }
