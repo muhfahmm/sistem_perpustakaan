@@ -37,11 +37,12 @@
     <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
-                <th style="width: 15%;">Kode Transaksi</th>
-                <th style="width: 30%;">Buku & Peminjam</th>
-                <th style="width: 20%;">Tgl Pinjam / Jatuh Tempo</th>
-                <th style="width: 12%; text-align: center;">Status</th>
-                <th style="width: 11%; text-align: center;">Detail & QR</th>
+                <th style="width: 14%;">Kode Transaksi</th>
+                <th style="width: 24%;">Buku & Peminjam</th>
+                <th style="width: 18%;">Tgl Pinjam / Jatuh Tempo</th>
+                <th style="width: 10%; text-align: center;">Status</th>
+                <th style="width: 10%; text-align: center;">Detail & QR</th>
+                <th style="width: 12%; text-align: center;">Kirim Notif</th>
                 <th style="width: 12%; text-align: center;">Aksi Persetujuan</th>
             </tr>
         </thead>
@@ -91,6 +92,19 @@
                             Detail & QR
                         </button>
                     </td>
+                    <!-- KOLOM TERPISAH KIRIM NOTIFIKASI MANUAL -->
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 4px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                            <form method="POST" action="{{ route('admin.loans.notify_wa', $loan) }}" target="_blank" style="display: inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.72rem; color: #16a34a; border-color: #bbf7d0; background: #f0fdf4;" title="Kirim notifikasi WA ke WA API">Kirim WA</button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.loans.notify_email', $loan) }}" target="_blank" style="display: inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.72rem; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;" title="Kirim notifikasi Email">Kirim Email</button>
+                            </form>
+                        </div>
+                    </td>
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 4px; justify-content: center; align-items: center; flex-wrap: wrap;">
                             @if ($statusVal === 'pending')
@@ -116,7 +130,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; color: #64748b; padding: 28px;">Belum ada pengajuan peminjaman.</td>
+                    <td colspan="7" style="text-align: center; color: #64748b; padding: 28px;">Belum ada pengajuan peminjaman.</td>
                 </tr>
             @endforelse
         </tbody>

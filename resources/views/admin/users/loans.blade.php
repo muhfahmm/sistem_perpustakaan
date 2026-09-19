@@ -42,11 +42,12 @@
     <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
         <thead>
             <tr>
-                <th style="width: 15%;">Kode Transaksi</th>
-                <th style="width: 32%;">Buku</th>
+                <th style="width: 14%;">Kode Transaksi</th>
+                <th style="width: 28%;">Buku</th>
                 <th style="width: 18%;">Tgl Pinjam / Jatuh Tempo</th>
-                <th style="width: 15%;">Tgl Kembali</th>
-                <th style="width: 20%; text-align: center;">Status</th>
+                <th style="width: 14%;">Tgl Kembali</th>
+                <th style="width: 12%; text-align: center;">Status</th>
+                <th style="width: 14%; text-align: center;">Kirim Notif</th>
             </tr>
         </thead>
         <tbody>
@@ -93,10 +94,22 @@
                             <span class="status {{ $statusVal }}">{{ $statusLabels[$statusVal] ?? ucfirst($statusVal) }}</span>
                         @endif
                     </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 4px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                            <form method="POST" action="{{ route('admin.loans.notify_wa', $loan) }}" target="_blank" style="display: inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.72rem; color: #16a34a; border-color: #bbf7d0; background: #f0fdf4;" title="Kirim notifikasi WA ke WA API">Kirim WA</button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.loans.notify_email', $loan) }}" target="_blank" style="display: inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.72rem; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;" title="Kirim notifikasi Email">Kirim Email</button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #64748b; padding: 28px;">Belum ada riwayat peminjaman buku untuk peminjam ini.</td>
+                    <td colspan="6" style="text-align: center; color: #64748b; padding: 28px;">Belum ada riwayat peminjaman buku untuk peminjam ini.</td>
                 </tr>
             @endforelse
         </tbody>

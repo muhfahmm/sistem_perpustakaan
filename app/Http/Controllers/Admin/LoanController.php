@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\ApproveLoanRequest;
 use App\Models\Book;
 use App\Models\Loan;
 use App\Services\LoanService;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -89,5 +90,23 @@ class LoanController extends Controller
         });
 
         return back()->with('success', 'Data transaksi peminjaman berhasil dihapus dan stok buku dikembalikan.');
+    }
+
+    public function sendWaNotification(Loan $loan, NotificationService $notificationService): RedirectResponse
+    {
+        $result = $notificationService->sendWaNotification($loan);
+        if (!empty($result['wa_url'])) {
+            return redirect()->away($result['wa_url']);
+        }
+        return back()->with('success', $result['message']);
+    }
+
+    public function sendEmailNotification(Loan $loan, NotificationService $notificationService): RedirectResponse
+    {
+        $result = $notificationService->sendEmailNotification($loan);
+        if (!empty($result['gmail_url'])) {
+            return redirect()->away($result['gmail_url']);
+        }
+        return back()->with('success', $result['message']);
     }
 }

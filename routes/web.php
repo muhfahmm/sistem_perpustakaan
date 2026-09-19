@@ -37,6 +37,8 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::get('/loans', [AdminLoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');
         Route::post('/loans/{loan}/reject', [AdminLoanController::class, 'reject'])->name('loans.reject');
+        Route::post('/loans/{loan}/notify-wa', [AdminLoanController::class, 'sendWaNotification'])->name('loans.notify_wa');
+        Route::post('/loans/{loan}/notify-email', [AdminLoanController::class, 'sendEmailNotification'])->name('loans.notify_email');
         Route::delete('/loans/{loan}', [AdminLoanController::class, 'destroy'])->name('loans.destroy');
 
         Route::get('/scan', fn () => redirect()->route('admin.users.index'))->name('scan.index');

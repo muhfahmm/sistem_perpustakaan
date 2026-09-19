@@ -126,6 +126,8 @@ class LoanService
                 'keterangan' => "Peminjaman on-site langsung dibuat oleh admin, jatuh tempo {$dueDate}.",
             ]);
 
+            app(NotificationService::class)->sendLoanNotification($loan);
+
             return $loan;
         }, 3);
     }
@@ -148,6 +150,8 @@ class LoanService
                 'aktor_id' => $adminId,
                 'keterangan' => "Disetujui, jatuh tempo {$dueDate}.",
             ]);
+
+            app(NotificationService::class)->sendLoanNotification($fresh);
 
             return $fresh->fresh();
         }, 3);
