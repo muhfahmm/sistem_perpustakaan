@@ -21,8 +21,8 @@ CREATE TABLE tb_admin (
     INDEX idx_username (username)
 ) ENGINE=InnoDB;
 
--- ============ TB_USER (PEMINJAM BUKU) ============
-CREATE TABLE tb_user (
+-- ============ TB_USER_PEMINJAM (PEMINJAM BUKU) ============
+CREATE TABLE tb_user_peminjam (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -38,7 +38,25 @@ CREATE TABLE tb_user (
 CREATE TABLE tb_kategori (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     kategori VARCHAR(100) NOT NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO tb_kategori (id, kategori) VALUES
+(1, 'novel'),
+(2, 'komik'),
+(3, 'cerpen'),
+(4, 'puisi'),
+(5, 'pelajaran'),
+(6, 'agama'),
+(7, 'sains'),
+(8, 'teknologi'),
+(9, 'sejarah'),
+(10, 'biografi'),
+(11, 'referensi'),
+(12, 'majalah'),
+(13, 'bahasa'),
+(14, 'seni'),
+(15, 'olahraga');
+
 
 -- ============ TB_DATA_BUKU ============
 CREATE TABLE tb_data_buku (
@@ -68,7 +86,7 @@ CREATE TABLE tb_pinjaman (
     qr_code_path VARCHAR(255) NULL,
     catatan TEXT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES tb_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES tb_user_peminjam(id) ON DELETE CASCADE,
     FOREIGN KEY (buku_id) REFERENCES tb_data_buku(id) ON DELETE RESTRICT,
     FOREIGN KEY (disetujui_oleh) REFERENCES tb_admin(id) ON DELETE SET NULL,
 
@@ -104,7 +122,7 @@ CREATE TABLE tb_notifikasi (
     respon TEXT NULL,                     -- response dari WA gateway
     sent_at TIMESTAMP NULL,
     FOREIGN KEY (pinjaman_id) REFERENCES tb_pinjaman(id) ON DELETE SET NULL,
-    FOREIGN KEY (user_id) REFERENCES tb_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES tb_user_peminjam(id) ON DELETE CASCADE,
     INDEX idx_status (status),
     INDEX idx_sent_at (sent_at)
 ) ENGINE=InnoDB;

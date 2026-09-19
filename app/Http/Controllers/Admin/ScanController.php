@@ -110,7 +110,7 @@ class ScanController extends Controller
     public function storeOnsite(Request $request, LoanService $loanService): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'exists:tb_user,id'],
+            'user_id' => ['required', 'exists:tb_user_peminjam,id'],
             'book_id' => ['required', 'exists:tb_data_buku,id'],
             'due_date' => ['required', 'date', 'after_or_equal:today'],
             'catatan' => ['nullable', 'string', 'max:255'],

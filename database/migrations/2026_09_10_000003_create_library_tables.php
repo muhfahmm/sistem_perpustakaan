@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::create('tb_loans', function (Blueprint $table) {
             $table->id();
             $table->string('loan_code', 30)->unique();
-            $table->foreignId('user_id')->constrained('tb_user')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('tb_user_peminjam')->cascadeOnDelete();
             $table->foreignId('book_id')->constrained('tb_books')->restrictOnDelete();
             $table->foreignId('approved_by')->nullable()->constrained('tb_admin')->nullOnDelete();
             $table->date('loan_date');
@@ -61,7 +61,7 @@ return new class extends Migration
         Schema::create('tb_notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('loan_id')->nullable()->constrained('tb_loans')->nullOnDelete();
-            $table->foreignId('user_id')->constrained('tb_user')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('tb_user_peminjam')->cascadeOnDelete();
             $table->enum('channel', ['wa', 'email', 'system'])->default('wa');
             $table->enum('type', ['reminder_h1', 'reminder_h', 'overdue', 'approved', 'returned']);
             $table->string('phone', 20);

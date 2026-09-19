@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Anggota Baru')
+@section('title', 'Tambah Peminjam Baru')
 
 @section('content')
 <header style="margin-bottom: 20px;">
-    <h1>Tambah Anggota Baru</h1>
+    <h1>Tambah Peminjam Baru</h1>
 </header>
 
 <section class="panel" style="max-width: 550px;">
@@ -44,7 +44,7 @@
         </div>
 
         <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-primary">Simpan Anggota</button>
+            <button type="submit" class="btn btn-primary">Simpan Peminjam</button>
             <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Batal</a>
         </div>
     </form>

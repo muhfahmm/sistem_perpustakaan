@@ -49,10 +49,10 @@
             <span class="icon">✓</span> Pengembalian
         </a>
 
-        <div class="nav-label">Pengguna</div>
+        <div class="nav-label">Peminjam</div>
 
         <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <span class="icon">♙</span> Manajemen User
+            <span class="icon">♙</span> Manajemen Peminjam
         </a>
 
         <div class="nav-label">Alat & Laporan</div>

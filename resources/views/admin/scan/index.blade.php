@@ -87,7 +87,7 @@
             <div>Tgl Pinjam  : <span id="rec_date">-</span></div>
             <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
 
-            <div style="font-weight: bold;">PEMINJAM (tb_user)</div>
+            <div style="font-weight: bold;">PEMINJAM (tb_user_peminjam)</div>
             <div>Nama  : <span id="rec_user">-</span></div>
             <div>Telp  : <span id="rec_phone">-</span></div>
             <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>

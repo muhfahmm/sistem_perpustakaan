@@ -28,9 +28,9 @@ class ReportController extends Controller
             ->count();
 
         $recentReports = DB::table('tb_pinjaman')
-            ->join('tb_user', 'tb_user.id', '=', 'tb_pinjaman.user_id')
+            ->join('tb_user_peminjam', 'tb_user_peminjam.id', '=', 'tb_pinjaman.user_id')
             ->join('tb_data_buku', 'tb_data_buku.id', '=', 'tb_pinjaman.buku_id')
-            ->select('tb_pinjaman.*', 'tb_user.nama as borrower', 'tb_data_buku.judul as book_title')
+            ->select('tb_pinjaman.*', 'tb_user_peminjam.nama as borrower', 'tb_data_buku.judul as book_title')
             ->whereBetween('tb_pinjaman.tanggal_pinjam', [$startDate, $endDate])
             ->orderByDesc('tb_pinjaman.id')
             ->paginate(15);

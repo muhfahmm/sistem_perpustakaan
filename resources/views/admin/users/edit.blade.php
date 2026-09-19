@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Anggota')
+@section('title', 'Edit Data Peminjam')
 
 @section('content')
 <header style="margin-bottom: 20px;">
-    <h1>Edit Data Anggota</h1>
+    <h1>Edit Data Peminjam</h1>
 </header>
 
 <section class="panel" style="max-width: 550px;">
@@ -45,7 +45,7 @@
         </div>
 
         <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-primary">Perbarui Anggota</button>
+            <button type="submit" class="btn btn-primary">Perbarui Peminjam</button>
             <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Batal</a>
         </div>
     </form>

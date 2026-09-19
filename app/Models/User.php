@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'tb_user';
+    protected $table = 'tb_user_peminjam';
     public $timestamps = false;
 
     protected $fillable = [

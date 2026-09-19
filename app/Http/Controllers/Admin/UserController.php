@@ -33,7 +33,7 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:150', 'unique:tb_user,email'],
+            'email' => ['required', 'email', 'max:150', 'unique:tb_user_peminjam,email'],
             'telepon' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:6'],
             'status_aktif' => ['required', 'boolean'],
@@ -43,7 +43,7 @@ class UserController extends Controller
 
         User::create($data);
 
-        return redirect()->route('admin.users.index')->with('success', 'Anggota baru berhasil ditambahkan.');
+        return redirect()->route('admin.users.index')->with('success', 'Data peminjam baru berhasil ditambahkan.');
     }
 
     public function edit(User $user)
@@ -55,7 +55,7 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:150', 'unique:tb_user,email,'.$user->id],
+            'email' => ['required', 'email', 'max:150', 'unique:tb_user_peminjam,email,'.$user->id],
             'telepon' => ['required', 'string', 'max:20'],
             'status_aktif' => ['required', 'boolean'],
         ]);
@@ -67,12 +67,12 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.users.index')->with('success', 'Data anggota berhasil diperbarui.');
+        return redirect()->route('admin.users.index')->with('success', 'Data peminjam berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'Anggota berhasil dihapus.');
+        return redirect()->route('admin.users.index')->with('success', 'Data peminjam berhasil dihapus.');
     }
 }

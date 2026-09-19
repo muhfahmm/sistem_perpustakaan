@@ -25,7 +25,7 @@ return new class extends Migration
             $table->index('username');
         });
 
-        Schema::create('tb_user', function (Blueprint $table) {
+        Schema::create('tb_user_peminjam', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('email', 150)->unique();
@@ -60,7 +60,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tb_admin');
-        Schema::dropIfExists('tb_user');
+        Schema::dropIfExists('tb_user_peminjam');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

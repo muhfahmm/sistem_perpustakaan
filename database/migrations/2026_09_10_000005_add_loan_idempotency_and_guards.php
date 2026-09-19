@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('tb_user', function (Blueprint $table) {
+        Schema::table('tb_user_peminjam', function (Blueprint $table) {
             $table->unsignedInteger('active_loans_count')->default(0);
         });
 
@@ -64,6 +64,6 @@ SQL);
             $table->dropUnique(['idempotency_key']);
             $table->dropColumn(['idempotency_key', 'request_hash']);
         });
-        Schema::table('tb_user', fn (Blueprint $table) => $table->dropColumn('active_loans_count'));
+        Schema::table('tb_user_peminjam', fn (Blueprint $table) => $table->dropColumn('active_loans_count'));
     }
 };
