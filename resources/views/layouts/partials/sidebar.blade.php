@@ -5,66 +5,46 @@
     $adminInitial = strtoupper(substr($adminUsername, 0, 1));
 @endphp
 
-<aside>
-    <div class="brand">
-        <span class="brand-mark">P</span> Perpusku
-    </div>
+<aside class="admin-sidebar p-3">
+    <a class="admin-brand d-flex align-items-center gap-2 px-2 mb-3" href="{{ route('admin.dashboard') }}" aria-label="Perpustakaan SMK Al-Islam Surakarta">
+        <img class="admin-brand-logo" src="{{ asset('images/logo-sekolah.png') }}" alt="Logo SMK Al-Islam Surakarta">
+        <span>Perpustakaan SMK Al-Islam Surakarta</span>
+    </a>
 
-    <div class="profile">
-        <span class="profile-avatar">{{ $adminInitial }}</span>
-        <div>
-            <div class="profile-name">{{ $adminUsername }}</div>
-            <span class="profile-role">Administrator</span>
+    <div class="admin-profile d-flex align-items-center gap-3 px-2 py-3 mb-3">
+        <span class="admin-avatar rounded-circle d-inline-flex align-items-center justify-content-center fw-semibold">{{ $adminInitial }}</span>
+        <div class="min-w-0">
+            <div class="text-body fw-semibold text-truncate">{{ $adminUsername }}</div>
+            <div class="small text-secondary">Administrator</div>
         </div>
     </div>
 
-    <nav aria-label="Navigasi admin">
-        <div class="nav-label">Navigasi Utama</div>
+    @include('layouts.partials.sidebar-navigation')
 
-        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <span class="icon">⌂</span> Dashboard
-        </a>
-
-        <div class="nav-label">Katalog & Buku</div>
-
-        <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-            <span class="icon">🏷</span> Kategori Buku
-        </a>
-
-        <a href="{{ route('admin.books.index') }}" class="{{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
-            <span class="icon">▤</span> Manajemen Buku
-        </a>
-
-        <div class="nav-label">Sirkulasi & Transaksi</div>
-
-        <a href="{{ route('admin.loans.index') }}" class="{{ request()->routeIs('admin.loans.*') ? 'active' : '' }}">
-            <span class="icon">↔</span> Daftar Peminjaman
-        </a>
-
-        <a href="{{ route('admin.returns.index') }}" class="{{ request()->routeIs('admin.returns.*') ? 'active' : '' }}">
-            <span class="icon">✓</span> Pengembalian
-        </a>
-
-        <div class="nav-label">Peminjam</div>
-
-        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <span class="icon">♙</span> Manajemen Peminjam
-        </a>
-
-        <div class="nav-label">Alat & Laporan</div>
-
-        <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-            <span class="icon">▥</span> Laporan Sirkulasi
-        </a>
-
-        <div class="nav-label">Pengaturan</div>
-        <form method="POST" action="{{ route('admin.logout') }}">
-            @csrf
-            <button type="submit"><span class="icon">↪</span> Logout</button>
-        </form>
-    </nav>
-
-    <div class="sidebar-footer">
-        Panel Admin<br>Perpustakaan Digital
+    <div class="mt-auto border-top pt-3 px-2">
+        @include('layouts.partials.sidebar-logout')
     </div>
 </aside>
+
+<div class="offcanvas offcanvas-start admin-mobile-sidebar" tabindex="-1" id="adminMobileSidebar" aria-labelledby="adminMobileSidebarLabel">
+    <div class="offcanvas-header border-bottom">
+        <a class="admin-brand d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}" id="adminMobileSidebarLabel" aria-label="Perpustakaan SMK Al-Islam Surakarta">
+            <img class="admin-brand-logo" src="{{ asset('images/logo-sekolah.png') }}" alt="Logo SMK Al-Islam Surakarta">
+            <span>Perpustakaan SMK Al-Islam Surakarta</span>
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup menu"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column p-3">
+        <div class="admin-profile d-flex align-items-center gap-3 px-2 py-3 mb-3">
+            <span class="admin-avatar rounded-circle d-inline-flex align-items-center justify-content-center fw-semibold">{{ $adminInitial }}</span>
+            <div class="min-w-0">
+                <div class="text-body fw-semibold text-truncate">{{ $adminUsername }}</div>
+                <div class="small text-secondary">Administrator</div>
+            </div>
+        </div>
+        @include('layouts.partials.sidebar-navigation')
+        <div class="mt-auto border-top pt-3 px-2">
+            @include('layouts.partials.sidebar-logout')
+        </div>
+    </div>
+</div>

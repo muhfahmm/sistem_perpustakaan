@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
 
 Route::prefix('admin-panel')->name('admin.')->group(function () {
-    Route::middleware('guest:admin')->group(function () {
+    Route::middleware(['guest:admin', 'security.headers'])->group(function () {
         Route::get('/login', [AdminLoginController::class, 'showForm'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login'])->middleware('throttle:5,1')->name('login.attempt');
         Route::get('/register', [AdminRegisterController::class, 'showForm'])->name('register');
@@ -33,6 +33,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::resource('books', BookController::class);
         Route::resource('users', UserController::class);
         Route::get('/users/{user}/loans', [UserController::class, 'userLoans'])->name('users.loans');
+        Route::get('/users/{user}/receipt', [UserController::class, 'latestReceipt'])->name('users.receipt');
 
         Route::get('/loans', [AdminLoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [AdminLoanController::class, 'approve'])->name('loans.approve');

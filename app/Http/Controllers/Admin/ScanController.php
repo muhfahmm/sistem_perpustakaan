@@ -117,7 +117,9 @@ class ScanController extends Controller
         }
 
         $bookQuery = Book::query();
-        if (preg_match('/^\d{10,13}$/', $code)) {
+        if (preg_match('/^BOOK-(\d+)$/i', $code, $matches)) {
+            $bookQuery->whereKey($matches[1]);
+        } elseif (preg_match('/^\d{10,13}$/', $code)) {
             $bookQuery->where('isbn', $code);
         } else if (is_numeric($code)) {
             $bookQuery->where('id', $code)->orWhere('isbn', $code);
@@ -202,6 +204,8 @@ class ScanController extends Controller
                 'loan' => [
                     'id' => $loan->id,
                     'kode_pinjam' => $loan->kode_pinjam,
+                    'user_id' => $loan->user->id,
+                    'member_code' => 'AGT-'.$loan->user->id,
                     'user_nama' => $loan->user->nama ?? '-',
                     'user_telepon' => $loan->user->telepon ?? '-',
                     'book_judul' => $loan->book->judul ?? '-',

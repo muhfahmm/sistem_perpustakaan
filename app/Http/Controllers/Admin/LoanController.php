@@ -39,15 +39,13 @@ class LoanController extends Controller
             });
         }
 
-        if ($request->filled('status')) {
-            $status = $request->status;
-            if ($status === 'dipinjam') {
-                $query->whereIn('status', ['borrowed', 'pending', 'overdue']);
-            } elseif ($status === 'returned') {
-                $query->where('status', 'returned');
-            } else {
-                $query->where('status', $status);
-            }
+        $status = $request->query('status', 'dipinjam');
+        if ($status === 'dipinjam') {
+            $query->whereIn('status', ['borrowed', 'approved', 'pending', 'overdue']);
+        } elseif ($status === 'returned') {
+            $query->where('status', 'returned');
+        } elseif ($status !== 'semua') {
+            $query->where('status', $status);
         }
 
         $loans = $query->latest('id')

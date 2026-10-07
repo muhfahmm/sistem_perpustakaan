@@ -12,7 +12,7 @@
 </header>
 
 <!-- PROFILE CARD PEMINJAM -->
-<div class="panel" style="margin-bottom: 24px; border-top: 4px solid #00a65a;">
+<div class="panel" style="margin-bottom: 24px;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
         <div>
             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b;">DATA PEMINJAM</span>

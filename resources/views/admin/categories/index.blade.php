@@ -3,111 +3,130 @@
 @section('title', 'Kategori Buku')
 
 @section('content')
-<header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-    <h1>Kategori Buku</h1>
-    <button type="button" onclick="openAddModal()" class="btn btn-primary">+ Tambah Kategori</button>
+@if ($errors->any())
+    <div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>
+@endif
+<header class="admin-page-heading">
+    <div>
+        <h1 class="admin-page-title">Kategori Buku</h1>
+        <p>Kelola pengelompokan koleksi perpustakaan.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Tambah kategori
+    </button>
 </header>
 
-<section class="panel">
-    <div class="panel-heading">
-        <h2>Daftar Kategori Buku</h2>
+<section class="admin-page-card">
+    <div class="admin-page-card-header">
+        <div>
+            <h2 class="h6 fw-semibold mb-1">Daftar kategori</h2>
+            <span class="small text-secondary">{{ number_format($categories->total()) }} kategori terdaftar</span>
+        </div>
     </div>
-
-    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
-        <thead>
-            <tr>
-                <th style="width: 70px; text-align: center;">No</th>
-                <th>Nama Kategori</th>
-                <th style="width: 180px; text-align: center;">Total Koleksi Buku</th>
-                <th style="width: 140px; text-align: center;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($categories as $index => $cat)
+    <div class="table-responsive">
+        <table class="table table-hover admin-table">
+            <thead>
                 <tr>
-                    <td style="text-align: center; color: #64748b; font-weight: 500;">{{ $categories->firstItem() + $index }}</td>
-                    <td><strong style="color: #0f172a; font-size: 0.9rem;">{{ $cat->kategori }}</strong></td>
-                    <td style="text-align: center;">
-                        <span style="display: inline-block; padding: 4px 10px; background: #e0f2fe; color: #0369a1; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">{{ $cat->total_buku }} Buku</span>
-                    </td>
-                    <td style="text-align: center;">
-                        <div style="display: flex; gap: 6px; justify-content: center;">
-                            <button type="button" onclick="openEditModal({{ $cat->id }}, '{{ addslashes($cat->kategori) }}')" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;">Edit</button>
-                            <form method="POST" action="{{ route('admin.categories.destroy', $cat->id) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                    <th class="text-center" style="width: 70px;">No.</th>
+                    <th>Nama kategori</th>
+                    <th class="text-center">Koleksi</th>
+                    <th class="text-end">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($categories as $index => $cat)
+                    <tr>
+                        <td class="text-center text-secondary">{{ $categories->firstItem() + $index }}</td>
+                        <td class="fw-semibold text-dark">{{ $cat->kategori }}</td>
+                        <td class="text-center"><span class="badge rounded-pill text-bg-success-subtle text-success-emphasis">{{ number_format($cat->total_buku) }} buku</span></td>
+                        <td class="text-end text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#editModal" data-category-id="{{ $cat->id }}" data-category-name="{{ $cat->kategori }}">Edit</button>
+                            <form method="POST" action="{{ route('admin.categories.destroy', $cat->id) }}" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: #dc2626; border-color: #fecaca; background: #fff5f5;">Hapus</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
                             </form>
-                        </div>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #64748b; padding: 28px;">Belum ada data kategori. Klik "+ Tambah Kategori" untuk membuat.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <div style="margin-top: 16px;">
-        {{ $categories->links() }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="py-5 text-center text-secondary">Belum ada kategori. Tambahkan kategori pertama untuk mulai mengelompokkan buku.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    @if ($categories->hasPages())
+        <div class="d-flex justify-content-center border-top p-3 category-pagination">
+            {{ $categories->onEachSide(1)->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 </section>
 
-<!-- MODAL ADD KATEGORI -->
-<div id="addModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
-    <div style="background: #fff; width: 100%; max-width: 420px; border-radius: 4px; border-top: 4px solid #00a65a; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <h3 style="margin-top: 0; font-size: 1.1rem; color: #222; margin-bottom: 14px;">Tambah Kategori Buku</h3>
-        <form method="POST" action="{{ route('admin.categories.store') }}">
-            @csrf
-            <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Nama Kategori</label>
-                <input type="text" name="kategori" required placeholder="Contoh: Novel, Pemrograman, Sejarah" style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" onclick="closeAddModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-success">Simpan Kategori</button>
-            </div>
-        </form>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form method="POST" action="{{ route('admin.categories.store') }}">
+                @csrf
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="addModalLabel">Tambah kategori</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="newCategoryName" class="form-label">Nama kategori</label>
+                    <input id="newCategoryName" type="text" name="kategori" value="{{ old('kategori') }}" class="form-control @error('kategori') is-invalid @enderror" maxlength="100" required placeholder="Contoh: Novel, Sejarah">
+                    @error('kategori') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan kategori</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- MODAL EDIT KATEGORI -->
-<div id="editModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
-    <div style="background: #fff; width: 100%; max-width: 420px; border-radius: 4px; border-top: 4px solid #3c8dbc; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <h3 style="margin-top: 0; font-size: 1.1rem; color: #222; margin-bottom: 14px;">Edit Kategori Buku</h3>
-        <form id="editForm" method="POST" action="">
-            @csrf
-            @method('PUT')
-            <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Nama Kategori</label>
-                <input type="text" id="editKategoriInput" name="kategori" required style="width: 100%; padding: 8px 12px; border: 1px solid #d2d6de; border-radius: 3px; font-size: 0.85rem;">
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-primary">Perbarui Kategori</button>
-            </div>
-        </form>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form id="editForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="editModalLabel">Edit kategori</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="editKategoriInput" class="form-label">Nama kategori</label>
+                    <input type="text" id="editKategoriInput" name="kategori" class="form-control" maxlength="100" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan perubahan</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .category-pagination nav { justify-content: center; }
+    .category-pagination .pagination { margin-bottom: 0; }
+    .category-pagination .page-link { color: #198754; }
+    .category-pagination .active > .page-link { color: #fff; background-color: #198754; border-color: #198754; }
+</style>
+@endpush
 
 @push('scripts')
 <script>
-function openAddModal() {
-    document.getElementById('addModal').style.display = 'flex';
-}
-function closeAddModal() {
-    document.getElementById('addModal').style.display = 'none';
-}
-function openEditModal(id, name) {
+document.getElementById('editModal').addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
     const form = document.getElementById('editForm');
-    form.action = '{{ url("admin-panel/categories") }}/' + id;
-    document.getElementById('editKategoriInput').value = name;
-    document.getElementById('editModal').style.display = 'flex';
-}
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-}
+    form.action = `{{ url('admin-panel/categories') }}/${button.dataset.categoryId}`;
+    document.getElementById('editKategoriInput').value = button.dataset.categoryName;
+});
+
 </script>
 @endpush
 @endsection

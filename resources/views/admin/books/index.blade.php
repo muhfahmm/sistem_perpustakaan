@@ -3,84 +3,152 @@
 @section('title', 'Manajemen Buku')
 
 @section('content')
-<header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-    <h1>Manajemen Buku</h1>
-    <a href="{{ route('admin.books.create') }}" class="btn btn-primary">+ Tambah Buku Baru</a>
+<header class="admin-page-heading">
+    <div>
+        <h1 class="admin-page-title">Manajemen Buku</h1>
+        <p>Kelola identitas bibliografi, stok, dan lokasi koleksi.</p>
+    </div>
+    <a href="{{ route('admin.books.create') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Tambah buku</a>
 </header>
 
-<section class="panel">
-    <div class="panel-heading">
-        <h2>Daftar Koleksi Buku</h2>
-        <form method="GET" action="{{ route('admin.books.index') }}" style="display: flex; gap: 8px;">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, ISBN..." style="padding: 6px 10px; font-size: 0.8rem; border: 1px solid #d2d6de; border-radius: 3px;">
-            <button type="submit" class="btn btn-secondary">Cari</button>
+<section class="admin-page-card">
+    <div class="admin-page-card-header">
+        <div>
+            <h2 class="h6 fw-semibold mb-1">Koleksi buku</h2>
+            <span class="small text-secondary">{{ number_format($books->total()) }} judul terdaftar</span>
+        </div>
+        <form method="GET" action="{{ route('admin.books.index') }}" class="d-flex gap-2">
+            <label for="bookSearch" class="visually-hidden">Cari judul, penulis, ISBN, atau lokasi</label>
+            <input id="bookSearch" type="search" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari buku..." style="min-width: 220px;">
+            <button type="submit" class="btn btn-sm btn-outline-success">Cari</button>
+            @if (request('search'))
+                <a href="{{ route('admin.books.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+            @endif
         </form>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Judul Buku</th>
-                <th>ISBN</th>
-                <th>Stok / Tersedia</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($books as $book)
+    <div class="table-responsive">
+        <table class="table table-hover admin-table">
+            <thead>
                 <tr>
-                    <td>
-                        <strong style="color: #222;">{{ $book->judul }}</strong>
-                    </td>
-                    <td><code>{{ $book->isbn ?? '-' }}</code></td>
-                    <td>{{ $book->tersedia }} / {{ $book->stok }} unit</td>
-                    <td>
-                        <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-secondary" style="font-size: 0.75rem;">Edit</a>
-                        <form method="POST" action="{{ route('admin.books.destroy', $book) }}" style="display: inline-block;" onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-secondary" style="font-size: 0.75rem; color: #dd4b39;">Hapus</button>
-                        </form>
-                    </td>
+                    <th>Identitas buku</th>
+                    <th>ISBN / klasifikasi</th>
+                    <th>Lokasi rak</th>
+                    <th class="text-center">Stok</th>
+                    <th class="text-center">QR buku</th>
+                    <th class="text-end">Aksi</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #68777d; padding: 24px;">Belum ada data buku.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <div style="margin-top: 16px;">
-        {{ $books->links() }}
+            </thead>
+            <tbody>
+                @forelse ($books as $book)
+                    <tr>
+                        <td>
+                            <div class="fw-semibold text-dark">{{ $book->judul }}</div>
+                            <div class="small text-secondary">{{ $book->penulis ?: 'Penulis belum dicatat' }}</div>
+                            <div class="small text-secondary">
+                                {{ $book->penerbit ?: 'Penerbit belum dicatat' }}{{ $book->tahun_terbit ? ', '.$book->tahun_terbit : '' }}
+                                · {{ $book->category?->kategori ?? 'Tanpa kategori' }}
+                            </div>
+                            @if (!$book->penulis || !$book->penerbit || !$book->tahun_terbit)
+                                <span class="badge rounded-pill text-bg-warning mt-1">Metadata belum lengkap</span>
+                            @endif
+                        </td>
+                        <td>
+                            <code>{{ $book->isbn ?? '-' }}</code>
+                            <div class="small text-secondary">{{ $book->klasifikasi ?: 'Belum diklasifikasi' }}</div>
+                            @if ($book->isbn && !\App\Support\Isbn::isValid($book->isbn))
+                                <span class="small text-danger">Periksa ISBN</span>
+                            @endif
+                        </td>
+                        <td>{{ $book->lokasi_rak ?: '-' }}</td>
+                        <td class="text-center text-nowrap">{{ $book->tersedia }} / {{ $book->stok }}</td>
+                        <td class="text-center">
+                            @php
+                                $bookQrValue = $book->isbn ?: 'BOOK-'.$book->id;
+                            @endphp
+                            <div class="book-qr-code mx-auto" data-qr-value="{{ $bookQrValue }}" aria-label="QR buku {{ $book->judul }}"></div>
+                            <code class="small">{{ $bookQrValue }}</code>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                            <form method="POST" action="{{ route('admin.books.destroy', $book) }}" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="py-5 text-center text-secondary">
+                            {{ request('search') ? 'Tidak ada buku yang cocok dengan pencarian.' : 'Belum ada koleksi buku. Tambahkan buku pertama untuk mulai mengisi katalog.' }}
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    @if ($books->hasPages())
+        <div class="d-flex justify-content-center border-top p-3">
+            {{ $books->withQueryString()->onEachSide(1)->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 </section>
 
+@push('styles')
+<style>
+    .book-qr-code { display: grid; width: 88px; height: 88px; margin-bottom: 4px; place-items: center; }
+    .book-qr-code img, .book-qr-code canvas { display: block; width: 80px; height: 80px; }
+</style>
+@endpush
+
+@push('vendor-scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+@endpush
+
+@push('scripts')
+<script>
+document.querySelectorAll('[data-qr-value]').forEach((container) => {
+    const value = container.dataset.qrValue;
+    if (typeof QRCode !== 'function') {
+        container.textContent = value;
+        container.classList.add('text-danger', 'small');
+        return;
+    }
+
+    new QRCode(container, {
+        text: value,
+        width: 80,
+        height: 80,
+        colorDark: '#111827',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+    });
+});
+</script>
+@endpush
+
 @if (session('cannot_delete_book'))
-<!-- MODAL PERINGATAN GAGAL HAPUS BUKU -->
-<div id="cannotDeleteBookModal" style="display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
-    <div style="background: #fff; width: 100%; max-width: 450px; border-radius: 8px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-        <div style="display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #ef4444; padding-bottom: 12px; margin-bottom: 16px;">
-            <span style="font-size: 1.8rem;">🚫</span>
-            <div>
-                <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a;">Buku Tidak Dapat Dihapus!</h3>
-                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">Proteksi integritas riwayat transaksi perpustakaan.</p>
+    <div class="modal fade" id="cannotDeleteBookModal" tabindex="-1" aria-labelledby="cannotDeleteBookModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5 text-danger" id="cannotDeleteBookModalLabel">Buku tidak dapat dihapus</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="fw-semibold">{{ session('cannot_delete_book')['title'] }}</div>
+                    <div class="small text-secondary mb-3">ISBN: {{ session('cannot_delete_book')['isbn'] }}</div>
+                    <p class="mb-0">{{ session('cannot_delete_book')['message'] }}</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ route('admin.loans.index', ['status' => 'semua', 'search' => session('cannot_delete_book')['title']]) }}" class="btn btn-outline-success">Lihat riwayat peminjaman</a>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Mengerti</button>
+                </div>
             </div>
-        </div>
-
-        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
-            <div style="font-weight: 700; color: #991b1b; font-size: 0.95rem;">{{ session('cannot_delete_book')['title'] }}</div>
-            <div style="font-size: 0.8rem; color: #7f1d1d; margin-top: 4px;">ISBN: <code>{{ session('cannot_delete_book')['isbn'] }}</code></div>
-            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #fca5a5; font-size: 0.82rem; color: #991b1b; line-height: 1.4;">
-                {{ session('cannot_delete_book')['message'] }}
-            </div>
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <a href="{{ route('admin.loans.index') }}" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.85rem;">Cek Data Peminjaman</a>
-            <button type="button" onclick="document.getElementById('cannotDeleteBookModal').style.display='none'" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; background: #ef4444; border-color: #ef4444;">Paham & Tutup</button>
         </div>
     </div>
-</div>
+    @push('scripts')
+    <script>bootstrap.Modal.getOrCreateInstance(document.getElementById('cannotDeleteBookModal')).show();</script>
+    @endpush
 @endif
 @endsection

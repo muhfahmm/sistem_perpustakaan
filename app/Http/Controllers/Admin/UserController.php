@@ -24,10 +24,30 @@ class UserController extends Controller
 
         $users = $query->withCount(['loans as active_loans_count' => function ($q) {
             $q->whereIn('status', ['pending', 'approved', 'borrowed', 'overdue']);
-        }])->latest('id')->paginate(10);
+        }])->with('latestLoan')->latest('id')->paginate(10);
         $books = Book::where('tersedia', '>', 0)->orderBy('judul')->get();
 
         return view('admin.users.index', compact('users', 'books'));
+    }
+
+    public function latestReceipt(User $user)
+    {
+        $loan = $user->latestLoan()->with(['user', 'book'])->first();
+        if (!$loan) {
+            return response()->json(['message' => 'Peminjam ini belum memiliki transaksi peminjaman.'], 404);
+        }
+
+        return response()->json([
+            'id' => $loan->id,
+            'kode_pinjam' => $loan->kode_pinjam,
+            'member_code' => 'AGT-'.$user->id,
+            'user_nama' => $user->nama,
+            'user_telepon' => $user->telepon,
+            'book_judul' => $loan->book->judul ?? '-',
+            'book_isbn' => $loan->book->isbn ?? '-',
+            'tanggal_pinjam' => $loan->tanggal_pinjam?->format('d M Y') ?? '-',
+            'jatuh_tempo' => $loan->jatuh_tempo?->format('d M Y') ?? '-',
+        ]);
     }
 
     public function create()

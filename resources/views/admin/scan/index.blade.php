@@ -70,7 +70,7 @@
 
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
             <button type="button" onclick="resetForm()" class="btn btn-secondary">Reset Form</button>
-            <button type="submit" class="btn btn-success" style="padding: 10px 20px; font-size: 0.9rem;">✓ Simpan Peminjaman & Cetak Nota</button>
+            <button type="submit" class="btn btn-success" style="padding: 10px 20px; font-size: 0.9rem;">Pinjami Buku & Cetak Nota</button>
         </div>
     </form>
 </section>

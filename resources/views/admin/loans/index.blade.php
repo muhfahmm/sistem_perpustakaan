@@ -3,38 +3,52 @@
 @section('title', 'Peminjaman Buku')
 
 @section('content')
-<header style="margin-bottom: 20px;">
-    <h1>Daftar Peminjaman Buku</h1>
+<header class="admin-page-heading">
+    <div>
+        <h1 class="admin-page-title">Daftar Peminjaman Buku</h1>
+        <p>Pantau status transaksi, tenggat pengembalian, dan tindak lanjut.</p>
+    </div>
 </header>
 
-<section class="panel">
+<section class="admin-page-card">
     @if (!empty($selectedUser))
-        <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
-            <div style="font-size: 0.88rem; color: #0369a1; font-weight: 600;">
-                👤 Menampilkan daftar pinjaman buku untuk peminjam: <strong>{{ $selectedUser->nama }}</strong> ({{ $selectedUser->telepon }})
+        <div class="alert alert-success d-flex flex-wrap align-items-center justify-content-between gap-2 m-3 mb-0">
+            <div>
+                Menampilkan transaksi untuk <strong>{{ $selectedUser->nama }}</strong>
+                <span class="small">({{ $selectedUser->telepon }})</span>
             </div>
-            <a href="{{ route('admin.loans.index') }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;">✕ Tampilkan Semua Transaksi</a>
+            <a href="{{ route('admin.loans.index') }}" class="btn btn-sm btn-outline-success">Tampilkan semua transaksi</a>
         </div>
     @endif
 
-    <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <h2>Transaksi Peminjaman</h2>
-        <form method="GET" action="{{ route('admin.loans.index') }}" style="display: flex; align-items: center; gap: 8px; margin: 0;">
+    <div class="admin-page-card-header">
+        <div>
+            <h2 class="h6 fw-semibold mb-1">Transaksi peminjaman</h2>
+            <span class="small text-secondary">{{ number_format($loans->total()) }} transaksi</span>
+        </div>
+        <form method="GET" action="{{ route('admin.loans.index') }}" class="d-flex flex-wrap align-items-center gap-2">
             @if (request('user_id'))
                 <input type="hidden" name="user_id" value="{{ request('user_id') }}">
             @endif
-            <label for="filter_status" style="font-size: 0.82rem; font-weight: 600; color: #475569;">Filter Status:</label>
-            <select name="status" id="filter_status" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.83rem; color: #0f172a; background-color: #fff; cursor: pointer; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                <option value="">-- Semua Status --</option>
-                <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>📖 Masih Dipinjam</option>
-                <option value="returned" {{ request('status') === 'returned' ? 'selected' : '' }}>✅ Sudah Dikembalikan</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>⏳ Menunggu Persetujuan</option>
-                <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>⚠️ Terlambat</option>
+            <label for="loanSearch" class="visually-hidden">Cari transaksi</label>
+            <input id="loanSearch" type="search" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Cari kode, buku, peminjam..." style="min-width: 210px;">
+            <label for="filter_status" class="visually-hidden">Filter status</label>
+            <select name="status" id="filter_status" class="form-select form-select-sm" style="width: auto;">
+                <option value="dipinjam" {{ request('status', 'dipinjam') === 'dipinjam' ? 'selected' : '' }}>Pinjaman aktif</option>
+                <option value="returned" {{ request('status') === 'returned' ? 'selected' : '' }}>Dikembalikan</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu persetujuan</option>
+                <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>Terlambat</option>
+                <option value="semua" {{ request('status') === 'semua' ? 'selected' : '' }}>Semua transaksi</option>
             </select>
+            <button type="submit" class="btn btn-sm btn-success">Terapkan</button>
+            @if (request('search') || request('status'))
+                <a href="{{ route('admin.loans.index', request('user_id') ? ['user_id' => request('user_id')] : []) }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+            @endif
         </form>
     </div>
 
-    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+    <div class="table-responsive">
+    <table class="table table-hover admin-table loan-table">
         <thead>
             <tr>
                 <th style="width: 14%;">Kode Transaksi</th>
@@ -60,7 +74,7 @@
                     ];
                     $statusVal = is_object($loan->status) ? $loan->status->value : $loan->status;
                 @endphp
-                <tr>
+                <tr class="{{ $statusVal === 'returned' ? 'table-success' : '' }}">
                     <td><code>{{ $loan->kode_pinjam }}</code></td>
                     <td>
                         <strong style="color: #0f172a;">{{ $loan->book->judul ?? '-' }}</strong>
@@ -69,16 +83,19 @@
                     <td>
                         {{ $loan->tanggal_pinjam ? $loan->tanggal_pinjam->format('d M Y') : '-' }}
                         <span style="display: block; font-size: 0.75rem; color: #dc2626;">Jatuh Tempo: {{ $loan->jatuh_tempo ? $loan->jatuh_tempo->format('d M Y') : '-' }}</span>
-                    </td>
-                    <td style="text-align: center;">
                         @if ($statusVal === 'returned')
-                            <span style="background: #10b981; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center;">Dikembalikan</span>
+                            <span class="small text-success fw-semibold">Dikembalikan: {{ $loan->tanggal_kembali ? $loan->tanggal_kembali->format('d M Y') : '-' }}</span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        @if ($statusVal === 'returned')
+                            <span class="badge rounded-pill text-bg-success"><i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Dikembalikan</span>
                         @elseif ($statusVal === 'borrowed' || $statusVal === 'approved')
-                            <span style="background: #2563eb; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center;">Dipinjam</span>
+                            <span class="badge rounded-pill text-bg-primary">Dipinjam</span>
                         @elseif ($statusVal === 'pending')
-                            <span style="background: #f59e0b; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center;">Menunggu</span>
+                            <span class="badge rounded-pill text-bg-warning">Menunggu</span>
                         @elseif ($statusVal === 'overdue')
-                            <span style="background: #ef4444; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center;">Terlambat</span>
+                            <span class="badge rounded-pill text-bg-danger">Terlambat</span>
                         @else
                             <span class="status {{ $statusVal }}">{{ $statusLabels[$statusVal] ?? ucfirst($statusVal) }}</span>
                         @endif
@@ -130,16 +147,25 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align: center; color: #64748b; padding: 28px;">Belum ada pengajuan peminjaman.</td>
+                <td colspan="7" style="text-align: center; color: #64748b; padding: 28px;">Tidak ada transaksi untuk status atau pencarian ini.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
-
-    <div style="margin-top: 16px;">
-        {{ $loans->links() }}
     </div>
+
+    @if ($loans->hasPages())
+        <div class="d-flex justify-content-center border-top p-3">{{ $loans->onEachSide(1)->links('pagination::bootstrap-5') }}</div>
+    @endif
 </section>
+
+@push('styles')
+<style>
+    .loan-table { min-width: 1080px; }
+    .loan-table td { vertical-align: middle; }
+    .admin-page-card .form-control:focus, .admin-page-card .form-select:focus { border-color: #198754; box-shadow: 0 0 0 .2rem rgba(25, 135, 84, .13); }
+</style>
+@endpush
 
 <!-- MODAL POPUP DETAIL PEMINJAMAN & QR CODE -->
 <div id="loanDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">

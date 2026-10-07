@@ -4,302 +4,81 @@
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk Admin | Perpusku</title>
+    <title>Masuk Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --paper: #ecf0f5;
-            --panel: #ffffff;
-            --ink: #222d32;
-            --muted: #68777d;
-            --line: #dfe4e8;
-            --teal: #00a65a;
-            --teal-dark: #008d4c;
-            --blue-main: #3c8dbc;
-            --gold: #f6d55c;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-            background-color: var(--paper);
-            color: var(--ink);
-            padding: 1.5rem;
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 420px;
-            background: var(--panel);
-            border-top: 4px solid var(--teal);
-            border-radius: 4px;
-            padding: 2.2rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .brand-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 1.25rem;
-        }
-
-        .brand-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--teal-dark);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .brand-logo-icon span {
-            display: grid;
-            width: 22px;
-            height: 22px;
-            place-items: center;
-            color: var(--ink);
-            background: var(--gold);
-            border-radius: 50%;
-            font-size: 0.8rem;
-        }
-
-        .brand-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--teal-dark);
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--line);
-        }
-
-        .form-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #333333;
-            margin-bottom: 4px;
-        }
-
-        .form-subtitle {
-            font-size: 0.82rem;
-            color: var(--muted);
-        }
-
-        .alert-box {
-            padding: 10px 14px;
-            border-radius: 3px;
-            font-size: 0.82rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .form-group {
-            margin-bottom: 1.1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #333333;
-            margin-bottom: 6px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .form-input {
-            width: 100%;
-            height: 40px;
-            padding: 0 12px;
-            font-family: inherit;
-            font-size: 0.85rem;
-            color: var(--ink);
-            background: #ffffff;
-            border: 1px solid #d2d6de;
-            border-radius: 3px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--blue-main);
-            box-shadow: 0 0 0 2px rgba(60, 141, 188, 0.2);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            color: var(--muted);
-            cursor: pointer;
-            padding: 4px;
-            font-size: 0.78rem;
-            font-weight: 600;
-        }
-
-        .form-options {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            margin-bottom: 1.25rem;
-            font-size: 0.8rem;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #475569;
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            width: 100%;
-            height: 42px;
-            background: var(--teal);
-            color: #ffffff;
-            border: none;
-            border-radius: 3px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-submit:hover {
-            background: var(--teal-dark);
-        }
-
-        .error-message {
-            font-size: 0.76rem;
-            color: #dd4b39;
-            margin-top: 4px;
-            display: block;
-        }
-
-        .form-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.83rem;
-            color: var(--muted);
-        }
-
-        .form-footer a {
-            color: var(--blue-main);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .form-footer a:hover {
-            text-decoration: underline;
-        }
+        body { min-height: 100vh; background: #f5f7f6; color: #24352c; font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif; }
+        .auth-card { width: min(100%, 420px); border: 1px solid #e7ece8; border-radius: 16px; box-shadow: 0 12px 36px rgba(27, 54, 39, .06); }
+        .brand { color: #16734f; font-weight: 800; letter-spacing: -.03em; }
+        .brand-icon { display: block; width: 48px; height: 48px; object-fit: contain; background: #fff; border-radius: 10px; }
+        .auth-title { font-size: 1.6rem; font-weight: 750; letter-spacing: -.04em; }
+        .muted { color: #77837b; }
+        .form-label { font-size: .9rem; font-weight: 650; }
+        .form-control { min-height: 46px; border-color: #dce5de; border-radius: 10px; }
+        .form-control:focus { border-color: #25835d; box-shadow: 0 0 0 .2rem rgba(37, 131, 93, .12); }
+        .input-group .form-control { border-radius: 10px 0 0 10px; }
+        .input-group .btn { border-color: #dce5de; border-radius: 0 10px 10px 0; }
+        .btn-auth { min-height: 46px; color: #fff; background: #19764f; border: 0; border-radius: 10px; font-weight: 700; }
+        .btn-auth:hover { color: #fff; background: #125f40; }
+        .auth-link { color: #16734f; font-weight: 700; text-decoration: none; }
+        .auth-link:hover { text-decoration: underline; }
+        .form-check-input:checked { background-color: #19764f; border-color: #19764f; }
     </style>
 </head>
 <body>
-    <main class="auth-card">
-        <div class="brand-header">
-            <div class="brand-logo-icon">
-                <span>P</span>
-            </div>
-            <span class="brand-name">Perpusku</span>
-        </div>
-
-        <div class="form-header">
-            <h1 class="form-title">Masuk Admin</h1>
-            <p class="form-subtitle">Masukkan username dan password admin Anda</p>
-        </div>
-
-        @if (session('error'))
-            <div class="alert-box alert-error">{{ session('error') }}</div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert-box alert-success">{{ session('success') }}</div>
-        @endif
-
-        <form method="POST" action="{{ route('admin.login.attempt') }}" autocomplete="off">
-            @csrf
-
-            <!-- USERNAME -->
-            <div class="form-group">
-                <label for="username" class="form-label">Username Admin</label>
-                <div class="input-wrapper">
-                    <input id="username" type="text" name="username" class="form-input" value="{{ old('username') }}" placeholder="Masukkan username admin" required autofocus>
+    <main class="container min-vh-100 d-flex align-items-center justify-content-center py-4">
+        <div class="auth-card card">
+            <div class="card-body p-4 p-sm-5">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <img class="brand-icon" src="{{ asset('images/logo-sekolah.png') }}" alt="Logo SMK Al-Islam Surakarta">
                 </div>
-                @error('username') <span class="error-message">{{ $message }}</span> @enderror
-            </div>
-
-            <!-- PASSWORD -->
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-wrapper">
-                    <input id="password" type="password" name="password" class="form-input" placeholder="Masukkan password" required minlength="8">
-                    <button type="button" class="toggle-password" onclick="toggleVisibility('password', this)">Lihat</button>
+                <div class="mb-4">
+                    <h1 class="auth-title mb-2">Masuk admin</h1>
+                    <p class="muted mb-0">Masuk untuk melanjutkan ke panel perpustakaan.</p>
                 </div>
-                @error('password') <span class="error-message">{{ $message }}</span> @enderror
+
+                @if (session('error'))
+                    <div class="alert alert-danger rounded-3" role="alert">{{ session('error') }}</div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success rounded-3" role="alert">{{ session('success') }}</div>
+                @endif
+
+                <form method="POST" action="{{ route('admin.login.attempt') }}" autocomplete="off">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username admin</label>
+                        <input id="username" type="text" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Masukkan username" required autofocus autocomplete="username">
+                        @error('username') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Masukkan password" required autocomplete="current-password">
+                            <button class="btn btn-outline-secondary" type="button" data-toggle-password="password" aria-label="Tampilkan password">Lihat</button>
+                        </div>
+                        @error('password') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label muted" for="remember">Ingat saya</label>
+                    </div>
+                    <button type="submit" class="btn btn-auth w-100">Masuk</button>
+                </form>
+                <p class="text-center muted mt-4 mb-0">Belum punya akun admin? <a class="auth-link" href="{{ route('admin.register') }}">Daftar</a></p>
             </div>
-
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" name="remember">
-                    <span>Ingat saya</span>
-                </label>
-            </div>
-
-            <button type="submit" class="btn-submit">Masuk</button>
-        </form>
-
-        <div class="form-footer">
-            Belum punya akun admin? <a href="{{ route('admin.register') }}">Daftar</a>
         </div>
     </main>
-
     <script>
-        function toggleVisibility(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.innerText = 'Sembunyikan';
-            } else {
-                input.type = 'password';
-                btn.innerText = 'Lihat';
-            }
-        }
+        document.querySelectorAll('[data-toggle-password]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const input = document.getElementById(button.dataset.togglePassword);
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                button.textContent = show ? 'Sembunyi' : 'Lihat';
+                button.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+            });
+        });
     </script>
 </body>
 </html>
