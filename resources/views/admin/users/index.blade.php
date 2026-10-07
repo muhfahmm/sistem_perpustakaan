@@ -164,7 +164,7 @@
     </div>
 
     @if ($users->hasPages())
-        <div class="d-flex justify-content-center border-top mt-3 pt-3">{{ $users->withQueryString()->onEachSide(1)->links('pagination::bootstrap-5') }}</div>
+        <div class="d-flex justify-content-center border-top mt-3 pt-3">{{ $users->withQueryString()->onEachSide(1)->links() }}</div>
     @endif
 </section>
 

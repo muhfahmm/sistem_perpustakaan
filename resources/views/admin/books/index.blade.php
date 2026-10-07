@@ -89,7 +89,7 @@
     </div>
     @if ($books->hasPages())
         <div class="d-flex justify-content-center border-top p-3">
-            {{ $books->withQueryString()->onEachSide(1)->links('pagination::bootstrap-5') }}
+            {{ $books->withQueryString()->onEachSide(1)->links() }}
         </div>
     @endif
 </section>

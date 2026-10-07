@@ -136,57 +136,10 @@
         }
 
         .admin-sidebar .nav-link i { width: 1.1rem; text-align: center; }
-        .admin-mobile-sidebar { --bs-offcanvas-width: 280px; }
-        .admin-mobile-sidebar .nav-link { color: #495057; }
-        .admin-mobile-sidebar .nav-link:hover { color: #146c43; background: var(--teal-soft); }
-        .admin-mobile-sidebar .nav-link.active { color: #fff; background: var(--teal); }
-        .admin-mobile-sidebar .nav-link.text-danger { color: #dc3545 !important; }
-        .admin-mobile-sidebar .nav-link.text-danger:hover { color: #b02a37 !important; background: #f8d7da; }
-        .admin-menu-toggle { display: none; }
-
-        @media (max-width: 1023px) {
-            .admin-menu-toggle { display: inline-flex; }
-        }
-
         main {
             min-width: 0;
             display: flex;
             flex-direction: column;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 56px;
-            padding: 0 24px;
-            color: #212529;
-            background: #fff;
-            border-bottom: 1px solid var(--line);
-        }
-
-        .topbar-brand-name { color: #212529; font-size: .85rem; font-weight: 700; }
-        .topbar-brand-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; background: #fff; }
-
-        .topbar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.88rem;
-            font-weight: 600;
-        }
-
-        .topbar-avatar {
-            display: grid;
-            width: 32px;
-            height: 32px;
-            place-items: center;
-            color: #495057;
-            background: #e9ecef;
-            border-radius: 50%;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
         }
 
         .main-content {
@@ -279,7 +232,6 @@
 
         @media (max-width: 767.98px) {
             .main-content { padding: 20px 16px 36px; }
-            .topbar { padding: 0 16px; }
             .admin-page-card-header, .admin-page-card-body { padding: 16px; }
             .admin-page-title { font-size: 1.35rem; }
         }
@@ -291,8 +243,6 @@
         @include('layouts.partials.sidebar')
 
         <main>
-            @include('layouts.partials.topbar')
-
             <div class="main-content">
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>

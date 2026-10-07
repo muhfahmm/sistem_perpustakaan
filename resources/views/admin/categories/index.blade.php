@@ -58,7 +58,7 @@
     </div>
     @if ($categories->hasPages())
         <div class="d-flex justify-content-center border-top p-3 category-pagination">
-            {{ $categories->onEachSide(1)->links('pagination::bootstrap-5') }}
+            {{ $categories->onEachSide(1)->links() }}
         </div>
     @endif
 </section>
