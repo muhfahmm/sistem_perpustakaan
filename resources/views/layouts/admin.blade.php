@@ -81,14 +81,29 @@
         }
 
         .admin-brand {
-            min-height: 64px;
-            color: #212529;
-            font-size: 1.2rem;
+            min-height: 52px;
+            color: #1a2e24;
+            font-size: 0.95rem;
             font-weight: 700;
+            line-height: 1.28;
+            letter-spacing: -0.01em;
             text-decoration: none;
         }
 
-        .admin-brand-logo { width: 40px; height: 40px; flex: 0 0 auto; object-fit: contain; border-radius: 8px; background: #fff; }
+        .admin-brand:hover {
+            color: #166e4a;
+        }
+
+        .admin-brand-logo {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            object-fit: contain;
+            border-radius: 9px;
+            background: #fff;
+            padding: 4px;
+            border: 1px solid rgba(22, 110, 74, 0.15);
+        }
 
         .admin-profile {
             border-top: 1px solid var(--line);

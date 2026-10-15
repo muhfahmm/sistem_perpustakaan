@@ -44,8 +44,22 @@
             border: 1px solid #e2eee7;
             border-radius: 10px;
         }
-        .brand-name { margin: 0; color: #166e4a; font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
-        .brand-sub { margin: 0; color: #6d7f76; font-size: 0.75rem; }
+        .brand-name {
+            margin: 0;
+            color: #14593c;
+            font-size: 1rem;
+            font-weight: 750;
+            line-height: 1.25;
+            letter-spacing: -0.015em;
+        }
+        .brand-sub {
+            margin: 2px 0 0;
+            color: #5c6e64;
+            font-size: 0.78rem;
+            font-weight: 500;
+            line-height: 1.25;
+            letter-spacing: 0.01em;
+        }
         .login-heading { margin-bottom: 20px; }
         .auth-title { margin-bottom: 5px; color: #162a20; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; }
         .muted { margin-bottom: 0; color: #697870; font-size: 0.83rem; line-height: 1.5; }
